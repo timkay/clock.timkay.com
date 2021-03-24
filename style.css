@@ -1,0 +1,53 @@
+
+body {
+    overflow: hidden;
+    margin: 0;
+}
+
+#face {
+    position: absolute;
+    box-sizing: border-box;
+}
+#clock {
+    display: none;
+    box-sizing: border-box;
+    border: 5px solid red;
+    border-radius: 50%;
+    background: #ffffffdd;
+    padding-top: 80px;
+    text-align: center;
+    font-size: x-large;
+}
+
+#clock > div {
+    padding-top: 10px;
+    font-size: xx-large;
+    font-face: bold;
+}
+
+#grab {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 35px;
+    right: 35px;
+}
+
+#grab {
+    -webkit-app-region: drag;
+}
+
+svg {
+    width: 30px;
+    height: 30px;
+    z-index: -1;
+    fill: #ddd;
+}
+
+body:hover svg {
+    fill: black;
+}
+
+#grab:hover svg {
+    fill: red;
+}
