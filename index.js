@@ -71,8 +71,8 @@ function update() {
 
 function popout() {
     if (location === parent.location && $(window).width() !== w) {
-        open('https://clock.timkay.com/', 'clock', options);
-        window.close();
+        // open('https://clock.timkay.com/', 'clock', options);
+        // window.close();
     }
 }
 
