@@ -61,10 +61,10 @@ const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
 function update() {
     if (timing) timer1 = new Date().getTime();
     let d = new Date();
-    face.show(d.getHours(), d.getMinutes(), d.getSeconds());
+    face.show(d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds());
     let day = `${days[d.getDay()]}`;
-    let date = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-    let time = `<div>${d.toLocaleTimeString()}</div>`;
+    let date = `${months[d.getMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+    let time = `<div>${d.toTimeString().substring(0, 8)}</div>`;
     if (timer0) time += `<div>${elapsed()} sec</div>`;
     $('#clock').html([day, date, time].join('\n'));
 }
