@@ -62,9 +62,9 @@ function update() {
     if (timing) timer1 = new Date().getTime();
     let d = new Date();
     face.show(d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds());
-    let day = `${days[d.getDay()]}`;
-    let date = `${months[d.getMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
-    let time = `<div>${d.toTimeString().substring(0, 8)}</div>`;
+    let day = `${days[d.getUTCDay()]}`;
+    let date = `${months[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+    let time = `<div>${d.toISOString().substring(11, 19)}</div>`;
     if (timer0) time += `<div>${elapsed()} sec</div>`;
     $('#clock').html([day, date, time].join('\n'));
 }
