@@ -75,7 +75,7 @@ function popout() {
     if (location === parent.location && $(window).width() !== w) {
         let options =  `height=${w}, width=${w}, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, directories=no, status=no`;
         open('https://clock.timkay.com/', 'clock', options);
-        window.close();
+        // window.close();
     }
 }
 
