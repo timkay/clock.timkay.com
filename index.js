@@ -72,7 +72,7 @@ function update() {
 }
 
 function popout() {
-    if (location === parent.location && $(window).width() !== w) {
+    if (location === parent.location && window.opener === window) {
         let options =  `height=${w}, width=${w}, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, directories=no, status=no`;
         open('https://clock.timkay.com/', 'clock', options);
         // window.close();
