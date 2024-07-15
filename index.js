@@ -1,6 +1,5 @@
 console.clear();
 
-let w = 150;
 
 let days = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
 let months = 'January February March April May June July August September October November December'.split(' ');
@@ -49,13 +48,15 @@ class ClockFace {
     }
 }
 
+
+let w;
 let face;
 let timing = false, timer0, timer1;
 
 const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
 
 function resize() {
-    w = Math.min($(window).width(), $(window).height());
+    w = Math.min($(window).outerWidth(), $(window).outerHeight());
     $('#clock').css({width: `${w}px`, height: `${w}px`, display: 'block'});
     face = new ClockFace();
 }
