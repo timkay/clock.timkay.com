@@ -57,7 +57,7 @@ const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
 function resize() {
     w = Math.min($(window).width(), $(window).height());
     $('#clock').css({width: `${w}px`, height: `${w}px`, display: 'block'});
-    face = new ClockFace
+    face = new ClockFace();
 }
 
 function update() {
@@ -75,7 +75,7 @@ function popout() {
     if (location === parent.location && window.opener === null) {
         let options =  `height=${w}, width=${w}, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, directories=no, status=no`;
         open('https://clock.timkay.com/', 'clock', options);
-        // window.close();
+        window.close();
     }
 }
 
