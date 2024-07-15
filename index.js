@@ -1,10 +1,6 @@
-// console.clear();
+console.clear();
 
-let w = 250;
-
-$('#clock').css({width: `${w}px`, height: `${w}px`, display: 'block'});
-
-let options =  `height=${w}, width=${w}, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, directories=no, status=no`;
+let w = 150;
 
 let days = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
 let months = 'January February March April May June July August September October November December'.split(' ');
@@ -53,10 +49,16 @@ class ClockFace {
     }
 }
 
-let face = new ClockFace;
+let face;
 let timing = false, timer0, timer1;
 
 const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
+
+function resize() {
+    w = Math.min($(window).width(), $(window).height());
+    $('#clock').css({width: `${w}px`, height: `${w}px`, display: 'block'});
+    face = new ClockFace
+}
 
 function update() {
     if (timing) timer1 = new Date().getTime();
@@ -71,8 +73,9 @@ function update() {
 
 function popout() {
     if (location === parent.location && $(window).width() !== w) {
-        // open('https://clock.timkay.com/', 'clock', options);
-        // window.close();
+        let options =  `height=${w}, width=${w}, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, directories=no, status=no`;
+        open('https://clock.timkay.com/', 'clock', options);
+        window.close();
     }
 }
 
@@ -101,9 +104,13 @@ $('#face').click(event => {
 //     // console.log(event);
 // });
 
-update();
-setInterval(update, 87);
-$(popout);
+$(window).resize(resize);
+$(() => {
+    resize();
+    update();
+    setInterval(update, 87);
+    popout();
+});
 
 
 

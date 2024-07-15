@@ -2,6 +2,7 @@
 body {
     overflow: hidden;
     margin: 0;
+    background: yellow;
 }
 
 #face {
@@ -13,7 +14,7 @@ body {
     box-sizing: border-box;
     border: 5px solid red;
     border-radius: 50%;
-    background: #ffffffdd;
+    background: #ffffff88;
     padding-top: 80px;
     text-align: center;
     font-size: x-large;
