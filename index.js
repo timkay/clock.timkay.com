@@ -64,10 +64,20 @@ function resize() {
 function update() {
     if (timing) timer1 = new Date().getTime();
     let d = new Date();
-    face.show(d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds());
-    let day = `${days[d.getUTCDay()]}`;
-    let date = `${months[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
-    let time = `<div>${d.toISOString().substring(11, 19)}</div>`;
+    let day;
+    let date;
+    let time;
+    if (false) {// UTC
+        face.show(d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds());
+        day = `${days[d.getUTCDay()]}`;
+        date = `${months[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+        time = `<div>${d.toISOString().substring(11, 19)}</div>`;
+    } else {
+        face.show(d.getHours(), d.getMinutes(), d.getSeconds());
+        day = `${days[d.getDay()]}`;
+        date = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+        time = `<div>${d.toString().substr(16, 8)}</div>`;
+    }
     if (timer0) time += `<div>${elapsed()} sec</div>`;
     $('#clock').html([day, date, time].join('\n'));
 }
