@@ -57,7 +57,6 @@ const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
 
 function resize() {
     w = Math.min($(window).outerWidth(), $(window).outerHeight());
-    window.resizeTo(w, w);
     $('#clock').css({width: `${w}px`, height: `${w}px`, display: 'block'});
     face = new ClockFace();
 }
