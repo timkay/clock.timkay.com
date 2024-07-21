@@ -78,7 +78,7 @@ function update() {
         day = `${days[d.getDay()]}`;
         date = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
         time = d.toString().substr(16, 8);
-        if (false && time > '12') {
+        if (time > '12') {
             time += ' PM';
             if (time > '13') {
                 time = (parseInt(time) - 12).toString().padStart(2, '0') + time.substr(2);
