@@ -85,8 +85,9 @@ function update() {
             }
         } else {
             if (time.startsWith('0')) {
-                time = '12' + time.substr(2) + ' AM';
+                time = '12' + time.substr(2);
             }
+            time += ' AM';
         }
     }
     time = `<div>${time}</div>`;
