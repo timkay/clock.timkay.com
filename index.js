@@ -84,7 +84,7 @@ function update() {
                 time = (parseInt(time) - 12).toString().padStart(2, '0') + time.substr(2);
             }
         } else {
-            if (time.startsWith('0')) {
+            if (time.startsWith('00')) {
                 time = '12' + time.substr(2);
             }
             time += ' AM';
