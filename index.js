@@ -49,6 +49,7 @@ class ClockFace {
 }
 
 
+const [initial_w, initial_h] = [300, 300];
 let w;
 let face;
 let timing = false, timer0, timer1;
@@ -97,9 +98,9 @@ function update() {
 
 function popout() {
     if (location === parent.location && window.opener === null) {
-        let options =  `height=${w}, width=${w}, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, directories=no, status=no`;
+        let options =  `height=${initial_w}, width=${initial_h}, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, directories=no, status=no`;
         open('https://clock.timkay.com/', 'clock', options);
-        window.close();
+        // window.close();
     }
 }
 
