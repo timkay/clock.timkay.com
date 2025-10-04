@@ -109,6 +109,12 @@ function time() {
     update();
 }
 
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/serviceworker.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.error("Service Worker fail", err));
+}
+
 $('#face').click(event => {
     timing = !timing;
     if (timing) timer0 = new Date().getTime();
