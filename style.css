@@ -10,7 +10,6 @@ body {
 }
 canvas {
     display: block;
-    border: thin dashed green;
 }
 #face {
     position: absolute;
