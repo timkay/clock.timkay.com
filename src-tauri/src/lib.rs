@@ -1,3 +1,5 @@
+use tauri_plugin_updater::UpdaterExt;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -10,6 +12,19 @@ pub fn run() {
             .build(),
         )?;
       }
+      let handle = app.handle().clone();
+      std::thread::spawn(move || {
+        loop {
+          std::thread::sleep(std::time::Duration::from_secs(30));
+          tauri::async_runtime::block_on(async {
+            if let Ok(updater) = handle.updater_builder().build() {
+              if let Ok(Some(update)) = updater.check().await {
+                let _ = update.download_and_install(|_, _| {}, || {}).await;
+              }
+            }
+          });
+        }
+      });
       Ok(())
     })
     .run(tauri::generate_context!())
