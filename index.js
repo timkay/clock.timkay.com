@@ -33,6 +33,7 @@ class ClockFace {
     }
     hand(z, len = 1) {
         let theta = (0.25 - z) * 2 * Math.PI;
+        this.begin();
         this.move(0, 0);
         this.draw(this.w / 4 * len * Math.cos(theta), this.w / 4 * len * Math.sin(theta));
         this.stroke();
@@ -43,7 +44,6 @@ class ClockFace {
         this.ctx.beginPath();
         this.ctx.arc(this.w / 2, this.h / 2, this.w / 2, 0, Math.PI * 2);
         this.ctx.fill();
-        this.begin();
         if (h > 12) h -= 12;
         if (h === 0) h = 12;
         this.hand((h + m / 60) / 12, 3/8);
