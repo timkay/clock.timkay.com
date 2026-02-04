@@ -96,7 +96,7 @@ function update() {
         }
     }
     time = `<div>${time}</div>`;
-    if (timer0) time += `<div>${elapsed()} sec <span class="reset">✕</span></div>`;
+    if (timer0) time += `<div>${elapsed()} sec</div><div class="reset">✕</div>`;
     $('#clock').html([day, date, time].join('\n'));
 }
 
@@ -116,16 +116,15 @@ if ("serviceWorker" in navigator) {
 }
 
 $('#clock').click(event => {
-    if ($(event.target).hasClass('reset')) return;
+    if ($(event.target).closest('.reset').length) {
+        timing = false;
+        timer0 = timer1 = null;
+        update();
+        return;
+    }
     timing = !timing;
     if (timing) timer0 = new Date().getTime();
     timer1 = new Date().getTime();
-    update();
-});
-
-$(document).on('click', '.reset', () => {
-    timing = false;
-    timer0 = timer1 = null;
     update();
 });
 
