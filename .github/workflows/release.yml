@@ -58,5 +58,5 @@ jobs:
           releaseName: ${{ startsWith(github.ref, 'refs/tags/') && format('Clock {0}', github.ref_name) || 'Clock (latest)' }}
           releaseBody: "Desktop clock app built with Tauri."
           releaseDraft: false
-          prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          prerelease: false
           updaterJsonPreferNsis: true
