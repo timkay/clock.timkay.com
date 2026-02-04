@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'src-tauri/**'
-      - 'Cargo.lock'
-      - 'package.json'
-      - '.github/workflows/release.yml'
     tags:
       - 'v*'
 
