@@ -2,6 +2,7 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
+    background: transparent;
 }
 body {
     overflow: hidden;
@@ -15,6 +16,7 @@ canvas {
 #face {
     position: absolute;
     box-sizing: border-box;
+    border-radius: 50%;
 }
 #clock {
     position: absolute;
@@ -23,7 +25,7 @@ canvas {
     box-sizing: border-box;
     border: 5px solid red;
     border-radius: 50%;
-    background: #ffffff88;
+    background: #ffff00cc;
     padding-top: 80px;
     text-align: center;
     font-size: x-large;
