@@ -6,7 +6,7 @@
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:8000",
-    "beforeBuildCommand": "mkdir -p dist && cp index.html index.js style.css jquery.js icon.png manifest.json serviceworker.js dist/",
+    "beforeBuildCommand": "mkdir -p dist && cp index.html index.js style.css jquery.js icon.png manifest.json serviceworker.js version.json dist/",
     "beforeDevCommand": ""
   },
   "app": {

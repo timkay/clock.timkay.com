@@ -136,11 +136,25 @@ $('#face').click(event => {
 //     // console.log(event);
 // });
 
+const localVersion = $('#version').text()
+
+function checkForUpdate() {
+    fetch('https://clock.timkay.com/version.json?' + Date.now())
+        .then(r => r.json())
+        .then(data => {
+            if (data.version && data.version !== localVersion) {
+                location.replace('https://clock.timkay.com/')
+            }
+        })
+        .catch(() => {})
+}
+
 $(window).resize(resize);
 $(() => {
     resize();
     update();
     setInterval(update, 87);
+    if (window.__TAURI_INTERNALS__) setInterval(checkForUpdate, 30000);
     popout();
 });
 
