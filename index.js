@@ -80,10 +80,12 @@ function resize() {
     prevWH = wh;
     w = Math.min(ww, wh);
     const scale = w / 250;
+    const fs = timing ? 16.8 : 21.8;
+    const pt = timing ? 42 : 54;
     $('#clock').css({
         width: `${w}px`, height: `${w}px`, display: 'block',
-        fontSize: `${scale * 16.8}px`,
-        paddingTop: `${scale * 42}px`,
+        fontSize: `${scale * fs}px`,
+        paddingTop: `${scale * pt}px`,
         borderWidth: `${scale * 3.5}px`
     });
     // CSS-scale the canvas instantly (no flicker)
@@ -137,6 +139,10 @@ function update() {
         time += `<div class="split">${splitTime !== null ? splitTime + 's' : '&nbsp;'}</div>`;
         time += `<div class="reset">✕</div>`;
     }
+    const scale = w / 250;
+    const fs = timing ? 16.8 : 21.8;
+    const pt = timing ? 42 : 54;
+    $('#clock').css({fontSize: `${scale * fs}px`, paddingTop: `${scale * pt}px`});
     $('#clock').html([day, date, time].join('\n'));
 }
 
