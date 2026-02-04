@@ -154,6 +154,7 @@ $(() => {
     resize();
     update();
     setInterval(update, 87);
+    checkForUpdate();
     setInterval(checkForUpdate, 30000);
     popout();
 });
