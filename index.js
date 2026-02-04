@@ -42,13 +42,8 @@ class ClockFace {
         this.clear();
         this.ctx.fillStyle = '#ffff00cc';
         this.ctx.beginPath();
-        this.ctx.arc(this.w / 2, this.h / 2, this.w / 2 - 3, 0, Math.PI * 2);
+        this.ctx.arc(this.w / 2, this.h / 2, this.w / 2, 0, Math.PI * 2);
         this.ctx.fill();
-        this.ctx.strokeStyle = 'red';
-        this.ctx.lineWidth = 5;
-        this.ctx.stroke();
-        this.ctx.strokeStyle = '#c008';
-        this.ctx.lineWidth = 6;
         if (h > 12) h -= 12;
         if (h === 0) h = 12;
         this.hand((h + m / 60) / 12, 3/8);

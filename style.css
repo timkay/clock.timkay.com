@@ -30,13 +30,13 @@ canvas {
     margin: 0;
     display: none;
     box-sizing: border-box;
-    border: none;
-    background: transparent;
-    padding-top: 80px;
+    border: 5px solid red;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.003);
+    padding-top: 50px;
     text-align: center;
     font-size: x-large;
     -webkit-app-region: no-drag;
-    overflow: visible;
 }
 
 #clock > div {
