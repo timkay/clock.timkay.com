@@ -154,6 +154,39 @@ There are no automated tests. Verify changes visually by loading the page and co
 - Layout stays square and responsive on window resize
 - For Tauri: window is frameless, transparent, and stays on top
 
+## Live Update System
+
+The Tauri desktop app and the website both support live JS/CSS updates without rebuilding the binary.
+
+### How it works
+
+1. `index.js` checks `https://clock.timkay.com/version.json` every 1 second
+2. If the version in `version.json` differs from the `#version` span in `index.html`, the page does `location.replace('https://clock.timkay.com/')` to reload from the live site
+3. This works in all contexts: Tauri (local files), Tauri (after redirect to website), and browser
+
+### Making a JS/CSS change
+
+To deploy a frontend change that all running apps pick up automatically:
+
+1. Edit the JS/CSS/HTML files
+2. Bump the version in **both** `index.html` (`<span id="version">`) and `version.json` — they must match
+3. Use the third version number for minor changes (e.g., `v0.2.5` → `v0.2.6`)
+4. Commit and push to the `claude/*` session branch
+5. The `auto-merge.yml` GitHub Action merges to main and deletes the branch
+6. Netlify deploys the updated site from main
+7. Running apps detect the version mismatch within 1 second and reload
+
+No binary rebuild is needed for JS/CSS/HTML-only changes. Only rebuild the binary when changing Rust code in `src-tauri/` or Tauri config.
+
+### CI/CD Pipelines
+
+- **`.github/workflows/auto-merge.yml`** — Triggered on push to `claude/**`. Merges the branch to main and deletes it.
+- **`.github/workflows/release.yml`** — Triggered on push to `main` or `v*` tags. Builds Tauri binaries for Linux, macOS, and Windows. Creates a GitHub Release with `latest.json` for the Tauri auto-updater.
+
+### Binary auto-updater
+
+The Tauri binary checks for updates via `tauri-plugin-updater` every 30 seconds (configured in `src-tauri/src/lib.rs`). The updater endpoint points to GitHub Releases (`latest.json`). This is separate from the JS live update — it handles Rust/Tauri binary updates.
+
 ## Important Details
 
 - The update interval is **87ms** — chosen to balance smooth hand movement against CPU usage
