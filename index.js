@@ -39,6 +39,10 @@ class ClockFace {
     }
     show(h, m, s) {
         this.clear();
+        this.ctx.fillStyle = '#ffff00cc';
+        this.ctx.beginPath();
+        this.ctx.arc(this.w / 2, this.h / 2, this.w / 2, 0, Math.PI * 2);
+        this.ctx.fill();
         this.begin();
         if (h > 12) h -= 12;
         if (h === 0) h = 12;
