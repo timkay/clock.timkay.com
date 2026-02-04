@@ -1,2 +1,4 @@
 node_modules/
 dist/
+.tauri-updater-key
+.tauri-updater-key.pub
