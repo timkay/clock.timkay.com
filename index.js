@@ -115,7 +115,7 @@ if ("serviceWorker" in navigator) {
         .catch(err => console.error("Service Worker fail", err));
 }
 
-$('#face').click(event => {
+$('#clock').click(event => {
     if ($(event.target).hasClass('reset')) return;
     timing = !timing;
     if (timing) timer0 = new Date().getTime();

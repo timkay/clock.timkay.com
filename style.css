@@ -36,6 +36,7 @@ canvas {
     padding-top: 80px;
     text-align: center;
     font-size: x-large;
+    -webkit-app-region: no-drag;
 }
 
 #clock > div {
