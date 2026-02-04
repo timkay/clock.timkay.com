@@ -115,32 +115,42 @@ if ("serviceWorker" in navigator) {
         .catch(err => console.error("Service Worker fail", err));
 }
 
-$('#clock').click(event => {
-    if ($(event.target).closest('.reset').length) {
-        timing = false;
-        timer0 = timer1 = null;
-        update();
-        return;
-    }
-    timing = !timing;
-    if (timing) timer0 = new Date().getTime();
-    timer1 = new Date().getTime();
-    update();
+let dragStart = null;
+let dragging = false;
+
+$(document).on('mousedown', e => {
+    dragStart = { x: e.screenX, y: e.screenY };
+    dragging = false;
 });
 
-// let save;
+$(document).on('mousemove', e => {
+    if (!dragStart) return;
+    const dx = Math.abs(e.screenX - dragStart.x);
+    const dy = Math.abs(e.screenY - dragStart.y);
+    if (!dragging && (dx > 3 || dy > 3)) {
+        dragging = true;
+        if (window.__TAURI_INTERNALS__) {
+            window.__TAURI_INTERNALS__.invoke('plugin:window|start_dragging', { label: 'main' })
+        }
+    }
+});
 
-// $('body')
-// .mousedown(event => {
-//     save = [event.clientX, event.clientY]
-//     console.log(save, event);
-// })
-// .mouseup(event => {
-//     console.log(event);
-// })
-// .mousemove(event => {
-//     // console.log(event);
-// });
+$(document).on('mouseup', e => {
+    if (!dragStart) return;
+    if (!dragging) {
+        if ($(e.target).closest('.reset').length) {
+            timing = false;
+            timer0 = timer1 = null;
+        } else {
+            timing = !timing;
+            if (timing) timer0 = Date.now();
+            timer1 = Date.now();
+        }
+        update();
+    }
+    dragStart = null;
+    dragging = false;
+});
 
 const localVersion = $('#version').text()
 
