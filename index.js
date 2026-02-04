@@ -7,11 +7,14 @@ let months = 'January February March April May June July August September Octobe
 class ClockFace {
     constructor() {
         this.canvas = $('#face')[0];
-        [this.w, this.h] = [w, w];
-        [this.canvas.width, this.canvas.height] = [this.w, this.h];
         this.ctx = this.canvas.getContext('2d');
+        this.setSize(w);
+    }
+    setSize(newW) {
+        [this.w, this.h] = [newW, newW];
+        [this.canvas.width, this.canvas.height] = [this.w, this.h];
         this.ctx.strokeStyle = '#c008';
-        this.ctx.lineWidth = 4.2 * w / 250;
+        this.ctx.lineWidth = 4.2 * newW / 250;
     }
     clear() {
         this.ctx.clearRect(0, 0, this.w, this.h);
@@ -60,7 +63,7 @@ let timing = false, timer0, timer1, splitTime = null;
 
 const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
 
-let prevWW, prevWH;
+let prevWW, prevWH, resizeTimer;
 function resize() {
     const ww = $(window).innerWidth();
     const wh = $(window).innerHeight();
@@ -83,12 +86,23 @@ function resize() {
         paddingTop: `${scale * 42}px`,
         borderWidth: `${scale * 3.5}px`
     });
+    // CSS-scale the canvas instantly (no flicker)
+    $('#face').css({width: `${w}px`, height: `${w}px`});
     $('#stopwatch').css({top: `${w + 2}px`, width: `${w}px`});
-    face = new ClockFace();
-    update();
+    // defer canvas resolution update until resize settles
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        if (!face) {
+            face = new ClockFace();
+        } else {
+            face.setSize(w);
+        }
+        update();
+    }, 150);
 }
 
 function update() {
+    if (!face) return;
     if (timing) timer1 = new Date().getTime();
     let d = new Date();
     let day;
@@ -206,6 +220,7 @@ $(window).resize(() => {
 });
 $(() => {
     resize();
+    face = new ClockFace();
     update();
     setInterval(update, 87);
     checkForUpdate();
