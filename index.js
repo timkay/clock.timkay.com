@@ -97,12 +97,8 @@ function update() {
         }
     }
     time = `<div>${time}</div>`;
+    if (timer0) time += `<div>${elapsed()}s <span class="reset">✕</span></div>`;
     $('#clock').html([day, date, time].join('\n'));
-    if (timer0) {
-        $('#stopwatch').html(`${elapsed()}s <span class="reset">✕</span>`);
-    } else {
-        $('#stopwatch').html('');
-    }
 }
 
 function popout() {
