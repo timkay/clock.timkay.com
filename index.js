@@ -11,7 +11,7 @@ class ClockFace {
         [this.canvas.width, this.canvas.height] = [this.w, this.h];
         this.ctx = this.canvas.getContext('2d');
         this.ctx.strokeStyle = '#c008';
-        this.ctx.lineWidth = 6 * w / 250;
+        this.ctx.lineWidth = 4.2 * w / 250;
     }
     clear() {
         this.ctx.clearRect(0, 0, this.w, this.h);
@@ -65,9 +65,9 @@ function resize() {
     const scale = w / 250;
     $('#clock').css({
         width: `${w}px`, height: `${w}px`, display: 'block',
-        fontSize: `${scale * 24}px`,
-        paddingTop: `${scale * 60}px`,
-        borderWidth: `${scale * 5}px`
+        fontSize: `${scale * 16.8}px`,
+        paddingTop: `${scale * 42}px`,
+        borderWidth: `${scale * 3.5}px`
     });
     $('#stopwatch').css({top: `${w + 2}px`, width: `${w}px`});
     face = new ClockFace();
