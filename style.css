@@ -13,6 +13,7 @@ body {
     overflow: hidden;
     margin: 0;
     background: transparent;
+    -webkit-app-region: drag;
 }
 canvas {
     display: block;
@@ -36,6 +37,7 @@ canvas {
     text-align: center;
     font-size: x-large;
     cursor: pointer;
+    -webkit-app-region: no-drag;
 }
 
 #clock > div {
