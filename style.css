@@ -24,6 +24,7 @@ canvas {
     position: absolute;
     box-sizing: border-box;
     border-radius: 50%;
+    -webkit-app-region: drag;
 }
 #clock {
     position: absolute;
@@ -36,14 +37,16 @@ canvas {
     padding-top: 60px;
     text-align: center;
     font-size: x-large;
-    cursor: pointer;
-    -webkit-app-region: no-drag;
+    pointer-events: none;
 }
 
 #clock > div {
     padding-top: 10px;
     font-size: xx-large;
     font-weight: bold;
+    pointer-events: auto;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
 }
 
 #grab {
@@ -77,6 +80,8 @@ svg {
     font-weight: normal;
     text-align: center;
     padding-top: 0 !important;
+    pointer-events: auto;
+    -webkit-app-region: no-drag;
 }
 
 #stopwatch {
