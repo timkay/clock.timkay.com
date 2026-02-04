@@ -6,7 +6,8 @@ html, body {
 body {
     overflow: hidden;
     margin: 0;
-    background: yellow;
+    background: transparent;
+    -webkit-app-region: drag;
 }
 canvas {
     display: block;
