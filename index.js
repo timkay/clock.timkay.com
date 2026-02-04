@@ -61,7 +61,16 @@ let timing = false, timer0, timer1, splitTime = null;
 const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
 
 function resize() {
-    w = Math.min($(window).outerWidth(), $(window).outerHeight());
+    const ww = $(window).innerWidth();
+    const wh = $(window).innerHeight();
+    // enforce square window
+    if (Math.abs(ww - wh) > 2) {
+        const size = Math.max(ww, wh);
+        const dw = window.outerWidth - window.innerWidth;
+        const dh = window.outerHeight - window.innerHeight;
+        try { window.resizeTo(size + dw, size + dh); } catch(e) {}
+    }
+    w = Math.min(ww, wh);
     const scale = w / 250;
     $('#clock').css({
         width: `${w}px`, height: `${w}px`, display: 'block',
@@ -71,6 +80,7 @@ function resize() {
     });
     $('#stopwatch').css({top: `${w + 2}px`, width: `${w}px`});
     face = new ClockFace();
+    update();
 }
 
 function update() {
@@ -103,8 +113,11 @@ function update() {
         }
     }
     time = `<div>${time}</div>`;
-    if (timing) time += `<div>${elapsed()}s</div>`;
-    if (splitTime !== null) time += `<div class="split">${splitTime}s</div><div class="reset">✕</div>`;
+    if (timing) {
+        time += `<div>${elapsed()}s</div>`;
+        time += `<div class="split">${splitTime !== null ? splitTime + 's' : '&nbsp;'}</div>`;
+        time += `<div class="reset">✕</div>`;
+    }
     $('#clock').html([day, date, time].join('\n'));
 }
 
@@ -181,7 +194,11 @@ function checkForUpdate() {
         .catch(() => {})
 }
 
-$(window).resize(resize);
+let resizeRAF;
+$(window).resize(() => {
+    cancelAnimationFrame(resizeRAF);
+    resizeRAF = requestAnimationFrame(resize);
+});
 $(() => {
     resize();
     update();
