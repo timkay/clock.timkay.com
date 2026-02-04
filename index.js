@@ -56,7 +56,7 @@ class ClockFace {
 const [initial_w, initial_h] = [300, 300];
 let w;
 let face;
-let timing = false, timer0, timer1;
+let timing = false, timer0, timer1, splitTime = null;
 
 const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
 
@@ -97,7 +97,7 @@ function update() {
         }
     }
     time = `<div>${time}</div>`;
-    if (timer0) time += `<div>${elapsed()}s <span class="reset">✕</span></div>`;
+    if (splitTime !== null) time += `<div>${splitTime}s <span class="reset">✕</span></div>`;
     $('#clock').html([day, date, time].join('\n'));
 }
 
@@ -142,10 +142,14 @@ $(document).on('mouseup', e => {
         if ($(e.target).closest('.reset').length) {
             timing = false;
             timer0 = timer1 = null;
-        } else {
+            splitTime = null;
+        } else if (!timing) {
             timing = true;
             timer0 = Date.now();
             timer1 = Date.now();
+        } else {
+            timer1 = Date.now();
+            splitTime = elapsed();
         }
         update();
     }
