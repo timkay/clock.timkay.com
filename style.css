@@ -63,6 +63,13 @@ svg {
     fill: #ddd;
 }
 
+.reset {
+    -webkit-app-region: no-drag;
+    cursor: pointer;
+    color: red;
+    font-size: large;
+}
+
 #version {
     position: fixed;
     bottom: 2px;
