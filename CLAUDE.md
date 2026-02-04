@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**clock.timkay.com** is a minimalist analog/digital clock Progressive Web App (PWA). It renders a canvas-based analog clock face with overlaid digital time, day, and date text. The site is deployed as a static site at https://clock.timkay.com/.
+**clock.timkay.com** is a minimalist analog/digital clock Progressive Web App (PWA) with a Tauri desktop wrapper. It renders a canvas-based analog clock face with overlaid digital time, day, and date text. The web version is deployed as a static site at https://clock.timkay.com/. The Tauri build produces a native desktop app with always-on-top, frameless, transparent window.
 
 ## Repository Structure
 
@@ -15,8 +15,17 @@
 ├── manifest.json       # PWA manifest (standalone display, yellow/red theme)
 ├── serviceworker.js    # Minimal service worker (install/activate, no caching strategy)
 ├── icon.png            # 192x192 PWA icon
-├── main.js             # Electron desktop wrapper (frameless, transparent, always-on-top)
 ├── _headers            # Netlify header config (Content-Type for manifest.json)
+├── package.json        # npm config (Tauri CLI dev dependency, `tauri` script)
+├── src-tauri/          # Tauri desktop app
+│   ├── tauri.conf.json # Tauri config (window, build, bundle settings)
+│   ├── Cargo.toml      # Rust dependencies (tauri, tauri-plugin-log)
+│   ├── src/
+│   │   ├── main.rs     # Binary entry point (calls clock_lib::run)
+│   │   └── lib.rs      # Tauri app setup (Builder, plugins)
+│   ├── build.rs        # Tauri build script
+│   ├── capabilities/   # Tauri permission capabilities
+│   └── icons/          # App icons for bundling (icns, ico, png)
 ├── webEdit.js          # Deprecated: asset display utility
 ├── weedit.js           # Deprecated: web editor integration (removed from HTML)
 └── README.md           # Minimal project title
@@ -24,15 +33,26 @@
 
 ## Architecture
 
-### No Build System
+### Web (Static Site)
 
-This is a zero-build static site. All files are served directly with no transpilation, bundling, or minification. There is no `package.json`, no npm dependencies, and no build scripts.
+The web version is a zero-build static site. The frontend files (`index.html`, `index.js`, `style.css`, `jquery.js`, etc.) are served directly with no transpilation, bundling, or minification.
+
+### Tauri (Desktop App)
+
+The Tauri wrapper in `src-tauri/` builds a native desktop application. The `beforeBuildCommand` copies web assets into a `dist/` directory (excluded from git) which Tauri embeds into the binary.
+
+**Window configuration** (`src-tauri/tauri.conf.json`):
+- 250x250, frameless (`decorations: false`), transparent, always-on-top
+- Resizable
+
+**Platform webviews**: WebKitGTK on Linux, WebView2 (Edge) on Windows, WKWebView on macOS.
 
 ### Entry Point Flow
 
 1. `index.html` loads `style.css`, `jquery.js`, then `index.js` (as ES6 module)
 2. `index.js` on DOM ready: calls `resize()` to create `ClockFace`, calls `update()`, starts `setInterval(update, 87)` loop, and calls `popout()`
-3. Service worker is registered for PWA support but does no caching
+3. `popout()` is skipped when running inside Tauri (checks `window.__TAURI_INTERNALS__`)
+4. Service worker is registered for PWA support but does no caching
 
 ### Key Components in index.js
 
@@ -42,7 +62,7 @@ This is a zero-build static site. All files are served directly with no transpil
   - `show(h, m, s)` — Clears canvas and draws all three hands (hour at 3/8, minute at 3/4, second at 95/100 length)
 - **`resize()`** — Recalculates dimensions to keep the clock square, fitting the smaller of window width/height
 - **`update()`** — Called every 87ms. Reads current time, updates analog hands via `face.show()`, formats digital display with day/date/time
-- **`popout()`** — Opens a small popup window if the page is viewed in a large browser window directly
+- **`popout()`** — Opens a small popup window if viewed in a large browser window (disabled in Tauri)
 - **Click handler** — Clicking the clock face toggles an elapsed-time stopwatch display
 
 ### Styling (style.css)
@@ -58,10 +78,6 @@ This is a zero-build static site. All files are served directly with no transpil
 - `serviceworker.js`: registers install/activate but passes all fetches to network (no offline caching)
 - `_headers`: Netlify config setting `Content-Type: application/manifest+json` for manifest
 
-### Electron Support (main.js)
-
-Optional desktop wrapper using Electron. Creates a 250x250 frameless, transparent, always-on-top window. Uses CommonJS (`require`). Not part of the web deployment.
-
 ## Code Conventions
 
 ### JavaScript
@@ -72,7 +88,12 @@ Optional desktop wrapper using Electron. Creates a 250x250 frameless, transparen
 - Arrow functions for short callbacks, `function` declarations for named functions
 - Destructuring assignment for array unpacking: `[this.w, this.h] = [w, w]`
 - Template literals for string formatting
-- No semicolons at end of lines is mixed — some lines have them, some don't. The codebase is inconsistent; follow the style of surrounding code when making changes.
+- No semicolons at end of lines is mixed — some lines have them, some don't. Follow the style of surrounding code when making changes.
+
+### Rust (src-tauri)
+
+- Standard Tauri v2 boilerplate. Minimal custom Rust code.
+- Crate name: `clock`, lib name: `clock_lib`
 
 ### CSS
 
@@ -88,7 +109,7 @@ Optional desktop wrapper using Electron. Creates a 250x250 frameless, transparen
 
 ## Development Workflow
 
-### Local Development
+### Local Web Development
 
 Serve the directory with any static file server:
 
@@ -100,9 +121,28 @@ npx serve .
 
 Open `http://localhost:8000` in a browser.
 
+### Tauri Development
+
+```sh
+npm run tauri dev       # Dev mode with hot reload (requires local server on port 8000)
+npm run tauri build     # Release build (copies assets to dist/, compiles Rust, produces bundles)
+```
+
+**Linux system dependencies** (required for build):
+```sh
+apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0-dev libjavascriptcoregtk-4.1-dev
+```
+
+**Build outputs** (in `src-tauri/target/release/bundle/`):
+- `.deb` (Debian/Ubuntu)
+- `.rpm` (Fedora/RHEL)
+- `.AppImage` (portable Linux)
+- `.msi`/`.exe` (Windows, when built on Windows)
+- `.dmg`/`.app` (macOS, when built on macOS)
+
 ### Deployment
 
-The site is deployed as static files to https://clock.timkay.com/ (likely via Netlify given the `_headers` file). Push to the appropriate branch and deploy.
+The web version is deployed as static files to https://clock.timkay.com/ (via Netlify, per the `_headers` file). Push to the appropriate branch and deploy.
 
 ### Testing
 
@@ -112,6 +152,7 @@ There are no automated tests. Verify changes visually by loading the page and co
 - Day and date display correctly
 - Click-to-time stopwatch toggles on/off
 - Layout stays square and responsive on window resize
+- For Tauri: window is frameless, transparent, and stays on top
 
 ## Important Details
 
@@ -120,6 +161,8 @@ There are no automated tests. Verify changes visually by loading the page and co
 - The clock defaults to **local time** (the `utc` const is hardcoded to `false`)
 - `console.clear()` is called at the top of `index.js` on every module load
 - Deprecated files (`webEdit.js`, `weedit.js`) remain in the repo but are not loaded
+- The `dist/` directory is a build artifact (gitignored) — web assets are copied there by the Tauri build command
+- `node_modules/` is gitignored
 
 ## Commit Style
 
