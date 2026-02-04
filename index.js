@@ -154,7 +154,7 @@ $(() => {
     resize();
     update();
     setInterval(update, 87);
-    if (window.__TAURI_INTERNALS__) setInterval(checkForUpdate, 30000);
+    setInterval(checkForUpdate, 30000);
     popout();
 });
 
