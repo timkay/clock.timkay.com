@@ -10,8 +10,8 @@ class ClockFace {
         [this.w, this.h] = [w, w];
         [this.canvas.width, this.canvas.height] = [this.w, this.h];
         this.ctx = this.canvas.getContext('2d');
-        this.ctx.strokeStyle = '#c00c';
-        this.ctx.lineWidth = 5;
+        this.ctx.strokeStyle = '#c00';
+        this.ctx.lineWidth = 6;
     }
     clear() {
         this.ctx.clearRect(0, 0, this.w, this.h);
@@ -155,7 +155,7 @@ $(() => {
     update();
     setInterval(update, 87);
     checkForUpdate();
-    setInterval(checkForUpdate, 30000);
+    setInterval(checkForUpdate, 1000);
     popout();
 });
 
