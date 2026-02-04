@@ -31,7 +31,7 @@ canvas {
 #clock > div {
     padding-top: 10px;
     font-size: xx-large;
-    font-face: bold;
+    font-weight: bold;
 }
 
 #grab {
