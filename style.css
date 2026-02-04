@@ -36,13 +36,12 @@ canvas {
     background: transparent;
     padding-top: 60px;
     text-align: center;
-    font-size: x-large;
     pointer-events: none;
 }
 
 #clock > div {
-    padding-top: 10px;
-    font-size: xx-large;
+    padding-top: 0.42em;
+    font-size: 1.33em;
     font-weight: bold;
     pointer-events: auto;
     cursor: pointer;
@@ -68,15 +67,15 @@ svg {
 }
 
 .split {
-    font-size: medium;
+    font-size: 0.67em;
     font-weight: normal;
-    padding-top: 2px !important;
+    padding-top: 0.08em !important;
 }
 
 .reset {
     cursor: pointer;
     color: red;
-    font-size: medium;
+    font-size: 0.67em;
     font-weight: normal;
     text-align: center;
     padding-top: 0 !important;
