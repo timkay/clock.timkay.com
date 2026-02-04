@@ -70,6 +70,14 @@ svg {
     padding-top: 0;
 }
 
+#stopwatch {
+    position: absolute;
+    text-align: center;
+    font-size: 12px;
+    color: white;
+    cursor: pointer;
+}
+
 #version {
     position: fixed;
     bottom: 2px;

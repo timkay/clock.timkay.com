@@ -63,6 +63,7 @@ const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
 function resize() {
     w = Math.min($(window).outerWidth(), $(window).outerHeight());
     $('#clock').css({width: `${w}px`, height: `${w}px`, display: 'block'});
+    $('#stopwatch').css({top: `${w + 2}px`, width: `${w}px`});
     face = new ClockFace();
 }
 
@@ -96,8 +97,12 @@ function update() {
         }
     }
     time = `<div>${time}</div>`;
-    if (timer0) time += `<div>${elapsed()} sec</div><div class="reset">✕</div>`;
     $('#clock').html([day, date, time].join('\n'));
+    if (timer0) {
+        $('#stopwatch').html(`${elapsed()}s <span class="reset">✕</span>`);
+    } else {
+        $('#stopwatch').html('');
+    }
 }
 
 function popout() {
@@ -142,8 +147,8 @@ $(document).on('mouseup', e => {
             timing = false;
             timer0 = timer1 = null;
         } else {
-            timing = !timing;
-            if (timing) timer0 = Date.now();
+            timing = true;
+            timer0 = Date.now();
             timer1 = Date.now();
         }
         update();
