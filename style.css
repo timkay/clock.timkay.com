@@ -35,6 +35,7 @@ canvas {
     padding-top: 60px;
     text-align: center;
     font-size: x-large;
+    cursor: pointer;
 }
 
 #clock > div {
