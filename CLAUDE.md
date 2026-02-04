@@ -178,6 +178,17 @@ To deploy a frontend change that all running apps pick up automatically:
 
 No binary rebuild is needed for JS/CSS/HTML-only changes. Only rebuild the binary when changing Rust code in `src-tauri/` or Tauri config.
 
+### Fast turnaround for changes
+
+To minimize latency when deploying updates:
+
+1. **Skip `git fetch`/`git reset`** — Don't sync with main before editing. The auto-merge handles it. Just edit files directly and push.
+2. **Edit, bump version, commit, push** — That's the entire workflow. Four steps.
+3. **Bump version in parallel** — Edit `index.html` and `version.json` together with the code changes, all in one commit.
+4. **Single commit** — Combine all related changes into one commit to minimize push overhead.
+
+The bottleneck is GitHub Actions (~10s to auto-merge) + Netlify deploy, not local work.
+
 ### CI/CD Pipelines
 
 - **`.github/workflows/auto-merge.yml`** — Triggered on push to `claude/**`. Merges the branch to main and deletes it.
