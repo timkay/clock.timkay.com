@@ -10,7 +10,7 @@ class ClockFace {
         [this.w, this.h] = [w, w];
         [this.canvas.width, this.canvas.height] = [this.w, this.h];
         this.ctx = this.canvas.getContext('2d');
-        this.ctx.strokeStyle = '#c00';
+        this.ctx.strokeStyle = '#c008';
         this.ctx.lineWidth = 6;
     }
     clear() {
