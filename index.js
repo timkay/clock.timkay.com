@@ -112,7 +112,7 @@ function update() {
             time += ' AM';
         }
     }
-    time = `<div>${time}</div>`;
+    time = `<div class="time">${time}</div>`;
     if (timing) {
         time += `<div>${elapsed()}s</div>`;
         time += `<div class="split">${splitTime !== null ? splitTime + 's' : '&nbsp;'}</div>`;

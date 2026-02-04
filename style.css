@@ -43,6 +43,9 @@ canvas {
     padding-top: 0.42em;
     font-size: 1.33em;
     font-weight: bold;
+}
+
+.time {
     pointer-events: auto;
     cursor: pointer;
     -webkit-app-region: no-drag;
