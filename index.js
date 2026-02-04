@@ -152,13 +152,17 @@ $(document).on('mouseup', e => {
     dragging = false;
 });
 
-const localVersion = $('#version').text()
+let localVersion = null;
 
 function checkForUpdate() {
     fetch('https://clock.timkay.com/version.json?' + Date.now())
         .then(r => r.json())
         .then(data => {
-            if (data.version && data.version !== localVersion) {
+            if (!data.version) return;
+            if (!localVersion) {
+                localVersion = data.version;
+                $('#version').text(localVersion);
+            } else if (data.version !== localVersion) {
                 location.replace('https://clock.timkay.com/')
             }
         })
