@@ -25,7 +25,7 @@ canvas {
     box-sizing: border-box;
     border: 5px solid red;
     border-radius: 50%;
-    background: yellow;
+    background: #ffff00cc;
     padding-top: 80px;
     text-align: center;
     font-size: x-large;
