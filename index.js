@@ -60,16 +60,21 @@ let timing = false, timer0, timer1, splitTime = null;
 
 const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
 
+let prevWW, prevWH;
 function resize() {
     const ww = $(window).innerWidth();
     const wh = $(window).innerHeight();
     // enforce square window
     if (Math.abs(ww - wh) > 2) {
-        const size = Math.max(ww, wh);
-        const dw = window.outerWidth - window.innerWidth;
-        const dh = window.outerHeight - window.innerHeight;
-        try { window.resizeTo(size + dw, size + dh); } catch(e) {}
+        const dw = prevWW !== undefined ? Math.abs(ww - prevWW) : 0;
+        const dh = prevWH !== undefined ? Math.abs(wh - prevWH) : 0;
+        const size = dw >= dh ? ww : wh;
+        const frameDw = window.outerWidth - window.innerWidth;
+        const frameDh = window.outerHeight - window.innerHeight;
+        try { window.resizeTo(size + frameDw, size + frameDh); } catch(e) {}
     }
+    prevWW = ww;
+    prevWH = wh;
     w = Math.min(ww, wh);
     const scale = w / 250;
     $('#clock').css({
@@ -124,7 +129,7 @@ function update() {
 function popout() {
     if (window.__TAURI_INTERNALS__) return;
     if (location === parent.location && window.opener === null && window.innerWidth > 500) {
-        let options =  `height=${initial_w}, width=${initial_h}, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, directories=no, status=no`;
+        let options =  `height=${initial_w}, width=${initial_h}, toolbar=no, menubar=no, scrollbars=no, resizable=yes, location=no, directories=no, status=no`;
         open('https://clock.timkay.com/', 'clock', options);
         // window.close();
     }

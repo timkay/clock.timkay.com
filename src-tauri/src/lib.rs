@@ -4,6 +4,14 @@ use tauri_plugin_updater::UpdaterExt;
 pub fn run() {
   tauri::Builder::default()
     .plugin(tauri_plugin_updater::Builder::new().build())
+    .on_window_event(|window, event| {
+      if let tauri::WindowEvent::Resized(size) = event {
+        if size.width != size.height && size.width > 0 && size.height > 0 {
+          let s = std::cmp::max(size.width, size.height);
+          let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize::new(s, s)));
+        }
+      }
+    })
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(
