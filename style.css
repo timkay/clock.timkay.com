@@ -64,12 +64,19 @@ svg {
     fill: #ddd;
 }
 
+.split {
+    font-size: medium;
+    font-weight: normal;
+    padding-top: 2px !important;
+}
+
 .reset {
     cursor: pointer;
     color: red;
-    font-size: large;
+    font-size: medium;
+    font-weight: normal;
     text-align: center;
-    padding-top: 0;
+    padding-top: 0 !important;
 }
 
 #stopwatch {

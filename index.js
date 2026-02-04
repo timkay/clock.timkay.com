@@ -98,7 +98,7 @@ function update() {
     }
     time = `<div>${time}</div>`;
     if (timing) time += `<div>${elapsed()}s</div>`;
-    if (splitTime !== null) time += `<div>${splitTime}s <span class="reset">✕</span></div>`;
+    if (splitTime !== null) time += `<div class="split">${splitTime}s</div><div class="reset">✕</div>`;
     $('#clock').html([day, date, time].join('\n'));
 }
 
