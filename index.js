@@ -264,14 +264,14 @@ function showOverlay(content) {
     }, { once: true });
 }
 
-function showToast(message, duration = 3000) {
+function showToast(message, duration = 4000) {
     let toast = document.getElementById('toast');
     if (!toast) {
         toast = document.createElement('div');
         toast.id = 'toast';
         document.body.appendChild(toast);
     }
-    toast.textContent = message;
+    toast.innerHTML = `${message}<div class="toast-hint">click to dismiss</div>`;
     toast.style.display = 'block';
     toast.onclick = () => { toast.style.display = 'none'; };
     clearTimeout(toast._timer);
