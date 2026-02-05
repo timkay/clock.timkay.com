@@ -79,17 +79,20 @@ function resize() {
     prevWW = ww;
     prevWH = wh;
     w = Math.min(ww, wh);
+    const left = Math.max(0, (ww - w) / 2);
+    const top = Math.max(0, (wh - w) / 2);
     const scale = w / 250;
     const fs = timing ? 16.8 : 21.8;
     const pt = timing ? 42 : 60;
     $('#clock').css({
         width: `${w}px`, height: `${w}px`, display: 'block',
+        left: `${left}px`, top: `${top}px`,
         fontSize: `${scale * fs}px`,
         paddingTop: `${scale * pt}px`,
         borderWidth: `${scale * 3.5}px`
     });
     // CSS-scale the canvas instantly (no flicker)
-    $('#face').css({width: `${w}px`, height: `${w}px`});
+    $('#face').css({width: `${w}px`, height: `${w}px`, left: `${left}px`, top: `${top}px`});
     $('#stopwatch').css({top: `${w + 2}px`, width: `${w}px`});
     // defer canvas resolution update until resize settles
     clearTimeout(resizeTimer);
