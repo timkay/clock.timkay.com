@@ -72,13 +72,6 @@ let resizeTimer;
 function resize() {
     const ww = $(window).innerWidth();
     const wh = $(window).innerHeight();
-    // enforce square window
-    if (Math.abs(ww - wh) > 2) {
-        const size = Math.max(ww, wh);
-        const frameDw = window.outerWidth - window.innerWidth;
-        const frameDh = window.outerHeight - window.innerHeight;
-        try { window.resizeTo(size + frameDw, size + frameDh); } catch(e) {}
-    }
     w = Math.min(ww, wh);
     const left = Math.max(0, (ww - w) / 2);
     const top = Math.max(0, (wh - w) / 2);
