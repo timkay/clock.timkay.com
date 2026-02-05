@@ -259,9 +259,7 @@ function showOverlay(content) {
         height: `${w}px`
     });
     overlay.innerHTML = content;
-    overlay.addEventListener('click', () => {
-        overlay.style.display = 'none';
-    }, { once: true });
+    overlay.onclick = () => { overlay.style.display = 'none'; };
 }
 
 function showToast(message, duration = 4000) {
