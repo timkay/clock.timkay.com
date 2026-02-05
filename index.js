@@ -94,7 +94,7 @@ function resize() {
     });
     // CSS-scale the canvas instantly (no flicker)
     $('#face').css({width: `${w}px`, height: `${w}px`, left: `${left}px`, top: `${top}px`});
-    $('#close').css({display: 'block', left: `${left + w - 20}px`, top: `${top + 8}px`});
+    $('#close').css({display: 'block', left: `${left + w - 24}px`, top: `${top + 12}px`});
     // position resize handles at the 4 corners
     const hs = 16; // handle size
     $('[data-direction="NorthWest"]').css({left: `${left}px`, top: `${top}px`});
