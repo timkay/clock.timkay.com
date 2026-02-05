@@ -1,6 +1,6 @@
 [package]
 name = "clock"
-version = "0.4.0"
+version = "0.5.9"
 description = "Always-on-top analog/digital clock"
 authors = ["Tim Kay"]
 license = "MIT"
