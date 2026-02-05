@@ -137,3 +137,59 @@ canvas {
     cursor: pointer;
     -webkit-app-region: no-drag;
 }
+#overlay {
+    display: none;
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.85);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
+    pointer-events: auto;
+    -webkit-app-region: no-drag;
+    font-family: sans-serif;
+    color: white;
+    cursor: pointer;
+}
+.about-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+.about-version {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 16px;
+}
+.about-desc {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+.about-url {
+    font-size: 13px;
+    color: #7af;
+}
+.about-hint {
+    font-size: 11px;
+    color: #666;
+    margin-top: 20px;
+}
+#toast {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: sans-serif;
+    font-size: 16px;
+    z-index: 40;
+    pointer-events: auto;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}

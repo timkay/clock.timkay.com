@@ -163,7 +163,7 @@ $(document).on('mousemove', e => {
 $(document).on('mouseup', e => {
     if (!dragStart) return;
     if (!dragging) {
-        if ($(e.target).closest('#close, #menu, #menu-dropdown, #version').length) {
+        if ($(e.target).closest('#close, #menu, #menu-dropdown, #version, #overlay, #toast').length) {
             dragStart = null;
             dragging = false;
             return;
@@ -240,6 +240,44 @@ body { margin: 0; display: flex; flex-direction: column; align-items: center; ju
 
 window.notify = notify;
 
+function showOverlay(content) {
+    let overlay = document.getElementById('overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'overlay';
+        document.body.appendChild(overlay);
+    }
+    const ww = $(window).innerWidth();
+    const wh = $(window).innerHeight();
+    const left = Math.max(0, (ww - w) / 2);
+    const top = Math.max(0, (wh - w) / 2);
+    $(overlay).css({
+        display: 'flex',
+        left: `${left}px`,
+        top: `${top}px`,
+        width: `${w}px`,
+        height: `${w}px`
+    });
+    overlay.innerHTML = content;
+    overlay.addEventListener('click', () => {
+        overlay.style.display = 'none';
+    }, { once: true });
+}
+
+function showToast(message, duration = 3000) {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.display = 'block';
+    toast.onclick = () => { toast.style.display = 'none'; };
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => { toast.style.display = 'none'; }, duration);
+}
+
 function checkForUpdate() {
     fetch('https://clock.timkay.com/version.json?' + Date.now())
         .then(r => r.json())
@@ -276,7 +314,13 @@ $(() => {
     }
 
     function showAbout() {
-        notify(`Clock ${localVersion || ''}\nclock.timkay.com`);
+        showOverlay(`
+            <div class="about-title">Clock</div>
+            <div class="about-version">${localVersion || ''}</div>
+            <div class="about-desc">Analog/digital clock</div>
+            <div class="about-url">clock.timkay.com</div>
+            <div class="about-hint">click to dismiss</div>
+        `);
     }
 
     // menu toggle
@@ -302,10 +346,13 @@ $(() => {
     $(document).on('click', '.menu-item', function() {
         const action = $(this).data('action');
         $('#menu-dropdown').hide();
-        if (action === 'notify') notify('Test notification');
+        if (action === 'notify') showToast('Test notification');
         else if (action === 'devtools') {
             if (window.__TAURI_INTERNALS__) {
-                window.__TAURI_INTERNALS__.invoke('plugin:webview|internal_toggle_devtools');
+                window.__TAURI_INTERNALS__.invoke('plugin:webview|internal_toggle_devtools')
+                    .catch(() => showToast('Dev Tools not available'));
+            } else {
+                showToast('Dev Tools requires Tauri');
             }
         }
         else if (action === 'about') showAbout();
@@ -316,7 +363,7 @@ $(() => {
     $('#version').on('click', showAbout);
 
     $(document).on('keydown', e => {
-        if (e.key === 'n' || e.key === 'N') notify('Test notification');
+        if (e.key === 'n' || e.key === 'N') showToast('Test notification');
     });
     popout();
 });
