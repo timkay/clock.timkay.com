@@ -51,8 +51,8 @@ canvas {
 }
 .reset {
     cursor: pointer;
-    color: red;
-    font-size: 0.67em;
+    color: black;
+    font-size: 0.5em;
     font-weight: normal;
     text-align: center;
     padding-top: 0 !important;

@@ -191,21 +191,23 @@ let localVersion = null;
 let notifyCount = 0;
 
 function notify(message) {
-    const pw = 400, ph = 200;
+    const pw = 500, ph = 250;
+    const popupStyle = `
+body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+       height: 100vh; font-family: sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); color: white; }
+.message { font-size: 32px; font-weight: bold; text-align: center; padding: 30px; }
+.dismiss { margin-top: 20px; padding: 12px 40px; font-size: 18px; cursor: pointer;
+           background: linear-gradient(135deg, #c00, #900); color: white; border: none; border-radius: 8px;
+           box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.dismiss:hover { background: linear-gradient(135deg, #e00, #b00); }
+.hint { font-size: 12px; color: #666; margin-top: 16px; }`;
     if (window.__TAURI_INTERNALS__) {
         const label = `notify-${++notifyCount}`;
         window.__TAURI_INTERNALS__.invoke('plugin:webview|create_webview_window', {
             options: {
                 label,
                 url: `data:text/html,${encodeURIComponent(`<!DOCTYPE html>
-<html><head><style>
-body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-       height: 100vh; font-family: sans-serif; background: #222; color: white; -webkit-app-region: drag; }
-.message { font-size: 24px; text-align: center; padding: 20px; }
-.dismiss { margin-top: 20px; padding: 10px 30px; font-size: 18px; cursor: pointer;
-           background: #c00; color: white; border: none; border-radius: 4px; -webkit-app-region: no-drag; }
-.dismiss:hover { background: #e00; }
-</style></head><body>
+<html><head><style>${popupStyle} body { -webkit-app-region: drag; } .dismiss { -webkit-app-region: no-drag; }</style></head><body>
 <div class="message">${message}</div>
 <button class="dismiss" onclick="window.__TAURI_INTERNALS__.invoke('plugin:window|close',{label:'${label}'})">Dismiss</button>
 </body></html>`)}`,
@@ -223,16 +225,11 @@ body { margin: 0; display: flex; flex-direction: column; align-items: center; ju
             `width=${pw},height=${ph},left=${px},top=${py},toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no`);
         if (!popup) return;
         popup.document.write(`<!DOCTYPE html>
-<html><head><style>
-  body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-         height: 100vh; font-family: sans-serif; background: #222; color: white; }
-  .message { font-size: 24px; text-align: center; padding: 20px; }
-  .dismiss { margin-top: 20px; padding: 10px 30px; font-size: 18px; cursor: pointer;
-             background: #c00; color: white; border: none; border-radius: 4px; }
-  .dismiss:hover { background: #e00; }
-</style></head><body>
-  <div class="message">${message}</div>
-  <button class="dismiss" onclick="window.close()">Dismiss</button>
+<html><head><style>${popupStyle}</style></head><body>
+<div class="message">${message}</div>
+<button class="dismiss" onclick="window.close()">Dismiss</button>
+<div class="hint">or press any key</div>
+<script>document.onkeydown = () => window.close();</script>
 </body></html>`);
         popup.document.close();
     }
@@ -346,7 +343,7 @@ $(() => {
     $(document).on('click', '.menu-item', function() {
         const action = $(this).data('action');
         $('#menu-dropdown').hide();
-        if (action === 'notify') showToast('Test notification');
+        if (action === 'notify') notify('Test notification');
         else if (action === 'devtools') {
             if (window.__TAURI_INTERNALS__) {
                 window.__TAURI_INTERNALS__.invoke('plugin:webview|internal_toggle_devtools')
@@ -363,7 +360,7 @@ $(() => {
     $('#version').on('click', showAbout);
 
     $(document).on('keydown', e => {
-        if (e.key === 'n' || e.key === 'N') showToast('Test notification');
+        if (e.key === 'n' || e.key === 'N') notify('Test notification');
     });
     popout();
 });
