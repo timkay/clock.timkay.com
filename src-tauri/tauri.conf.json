@@ -16,7 +16,6 @@
         "width": 250,
         "height": 250,
         "resizable": true,
-        "maximizable": false,
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": true
