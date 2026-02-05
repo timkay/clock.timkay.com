@@ -217,13 +217,16 @@ body { margin: 0; display: flex; flex-direction: column; align-items: center; ju
                 alwaysOnTop: true,
                 decorations: false,
             }
-        });
+        }).catch(() => showToast(message));
     } else {
         const px = (screen.width - pw) / 2;
         const py = (screen.height - ph) / 2;
         const popup = open('', '_blank',
             `width=${pw},height=${ph},left=${px},top=${py},toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no`);
-        if (!popup) return;
+        if (!popup) {
+            showToast(message);
+            return;
+        }
         popup.document.write(`<!DOCTYPE html>
 <html><head><style>${popupStyle}</style></head><body>
 <div class="message">${message}</div>
