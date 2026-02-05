@@ -63,21 +63,17 @@ let timing = false, timer0, timer1, splitTime = null;
 
 const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
 
-let prevWW, prevWH, resizeTimer;
+let resizeTimer;
 function resize() {
     const ww = $(window).innerWidth();
     const wh = $(window).innerHeight();
     // enforce square window
     if (Math.abs(ww - wh) > 2) {
-        const dw = prevWW !== undefined ? Math.abs(ww - prevWW) : 0;
-        const dh = prevWH !== undefined ? Math.abs(wh - prevWH) : 0;
-        const size = dw >= dh ? ww : wh;
+        const size = Math.max(ww, wh);
         const frameDw = window.outerWidth - window.innerWidth;
         const frameDh = window.outerHeight - window.innerHeight;
         try { window.resizeTo(size + frameDw, size + frameDh); } catch(e) {}
     }
-    prevWW = ww;
-    prevWH = wh;
     w = Math.min(ww, wh);
     const left = Math.max(0, (ww - w) / 2);
     const top = Math.max(0, (wh - w) / 2);
@@ -93,9 +89,7 @@ function resize() {
     });
     // CSS-scale the canvas instantly (no flicker)
     $('#face').css({width: `${w}px`, height: `${w}px`, left: `${left}px`, top: `${top}px`});
-    const r = w / 2;
-    const offset = r * 0.7;
-    $('#close').css({display: 'block', left: `${left + r + offset}px`, top: `${top + r - offset}px`});
+    $('#close').css({display: 'block', left: `${left + w - 16}px`, top: `${top + 4}px`});
     $('#stopwatch').css({top: `${w + 2}px`, width: `${w}px`});
     // defer canvas resolution update until resize settles
     clearTimeout(resizeTimer);
@@ -241,7 +235,6 @@ $(() => {
     checkForUpdate();
     setInterval(checkForUpdate, 1000);
     $('#close').on('click', () => {
-        document.body.style.display = 'none';
         if (window.__TAURI_INTERNALS__) {
             window.__TAURI_INTERNALS__.invoke('plugin:window|close', { label: 'main' });
         } else {
