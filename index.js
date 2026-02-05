@@ -303,6 +303,14 @@ $(() => {
     setInterval(update, 87);
     checkForUpdate();
     setInterval(checkForUpdate, 1000);
+
+    // Get Tauri app version
+    if (window.__TAURI_INTERNALS__) {
+        window.__TAURI_INTERNALS__.invoke('plugin:app|version')
+            .then(v => { $('#app-version').text('v' + v); })
+            .catch(() => {});
+    }
+
     function closeApp() {
         if (window.__TAURI_INTERNALS__) {
             window.__TAURI_INTERNALS__.invoke('plugin:window|close', { label: 'main' });

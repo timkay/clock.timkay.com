@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Clock",
-  "version": "0.5.9",
+  "version": "0.5.11",
   "identifier": "com.timkay.clock",
   "build": {
     "frontendDist": "../dist",
