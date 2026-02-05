@@ -240,7 +240,14 @@ $(() => {
     setInterval(update, 87);
     checkForUpdate();
     setInterval(checkForUpdate, 1000);
-    $('#close').on('click', () => window.close());
+    $('#close').on('click', () => {
+        document.body.style.display = 'none';
+        if (window.__TAURI_INTERNALS__) {
+            window.__TAURI_INTERNALS__.invoke('plugin:window|close', { label: 'main' });
+        } else {
+            window.close();
+        }
+    });
     popout();
 });
 
