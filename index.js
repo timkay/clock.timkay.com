@@ -81,7 +81,7 @@ function resize() {
     w = Math.min(ww, wh);
     const scale = w / 250;
     const fs = timing ? 16.8 : 21.8;
-    const pt = timing ? 42 : 54;
+    const pt = timing ? 42 : 60;
     $('#clock').css({
         width: `${w}px`, height: `${w}px`, display: 'block',
         fontSize: `${scale * fs}px`,
@@ -141,7 +141,7 @@ function update() {
     }
     const scale = w / 250;
     const fs = timing ? 16.8 : 21.8;
-    const pt = timing ? 42 : 54;
+    const pt = timing ? 42 : 60;
     $('#clock').css({fontSize: `${scale * fs}px`, paddingTop: `${scale * pt}px`});
     $('#clock').html([day, date, time].join('\n'));
 }
