@@ -7,7 +7,8 @@ pub fn run() {
     .on_window_event(|window, event| {
       match event {
         tauri::WindowEvent::Resized(size) => {
-          if size.width != size.height && size.width > 0 && size.height > 0 {
+          if !window.is_maximized().unwrap_or(false) &&
+             size.width != size.height && size.width > 0 && size.height > 0 {
             let s = std::cmp::max(size.width, size.height);
             let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize::new(s, s)));
           }
