@@ -212,8 +212,6 @@ $(document).on('mouseup', e => {
     dragging = false;
 });
 
-$(document).on('mouseenter', () => $('#close').css('opacity', 1));
-$(document).on('mouseleave', () => $('#close').css('opacity', 0));
 
 let localVersion = null;
 
