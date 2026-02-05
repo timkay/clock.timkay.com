@@ -273,5 +273,8 @@ $(() => {
             window.close();
         }
     });
+    $(document).on('keydown', e => {
+        if (e.key === 'n' || e.key === 'N') notify('Test notification');
+    });
     popout();
 });
