@@ -5,7 +5,6 @@ if (location.hostname !== 'clock.timkay.com' && location.protocol !== 'http:') {
     location.replace('https://clock.timkay.com/');
 }
 
-
 let days = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
 let months = 'January February March April May June July August September October November December'.split(' ');
 
@@ -24,27 +23,15 @@ class ClockFace {
     clear() {
         this.ctx.clearRect(0, 0, this.w, this.h);
     }
-    begin() {
-        this.ctx.beginPath();
-    }
     v2s(x, y) {
         return [this.w / 2 + x * 2, this.h / 2 - y * 2];
     }
-    move(x, y) {
-        this.ctx.moveTo(...this.v2s(x, y));
-    }
-    draw(x, y) {
-        this.ctx.lineTo(...this.v2s(x, y));
-    }
-    stroke() {
-        this.ctx.stroke();
-    }
     hand(z, len = 1) {
         let theta = (0.25 - z) * 2 * Math.PI;
-        this.begin();
-        this.move(0, 0);
-        this.draw(this.w / 4 * len * Math.cos(theta), this.w / 4 * len * Math.sin(theta));
-        this.stroke();
+        this.ctx.beginPath();
+        this.ctx.moveTo(...this.v2s(0, 0));
+        this.ctx.lineTo(...this.v2s(this.w / 4 * len * Math.cos(theta), this.w / 4 * len * Math.sin(theta)));
+        this.ctx.stroke();
     }
     show(h, m, s) {
         this.clear();
@@ -60,13 +47,17 @@ class ClockFace {
     }
 }
 
-
-const [initial_w, initial_h] = [300, 300];
 let w;
 let face;
 let timing = false, timer0, timer1, splitTime = null;
 
 const elapsed = () => ((timer1 - timer0) / 1000).toFixed(3);
+
+function formatTime(h, m, s) {
+    const period = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} ${period}`;
+}
 
 let resizeTimer;
 function resize() {
@@ -85,16 +76,13 @@ function resize() {
         paddingTop: `${scale * pt}px`,
         borderWidth: `${scale * 3.5}px`
     });
-    // CSS-scale the canvas instantly (no flicker)
     $('#face').css({width: `${w}px`, height: `${w}px`, left: `${left}px`, top: `${top}px`});
     $('#close').css({display: 'block', left: `${left + w - 24}px`, top: `${top + 12}px`});
-    // position resize handles at the 4 corners
-    const hs = 16; // handle size
+    const hs = 16;
     $('[data-direction="NorthWest"]').css({left: `${left}px`, top: `${top}px`});
     $('[data-direction="NorthEast"]').css({left: `${left + w - hs}px`, top: `${top}px`});
     $('[data-direction="SouthWest"]').css({left: `${left}px`, top: `${top + w - hs}px`});
     $('[data-direction="SouthEast"]').css({left: `${left + w - hs}px`, top: `${top + w - hs}px`});
-    $('#stopwatch').css({top: `${w + 2}px`, width: `${w}px`});
     // defer canvas resolution update until resize settles
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
@@ -109,35 +97,13 @@ function resize() {
 
 function update() {
     if (!face) return;
-    if (timing) timer1 = new Date().getTime();
     let d = new Date();
-    let day;
-    let date;
-    let time;
-    const utc = false;
-    if (utc) {
-        face.show(d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds());
-        day = `${days[d.getUTCDay()]}`;
-        date = `${months[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
-        time = d.toISOString().substring(11, 19);
-    } else {
-        face.show(d.getHours(), d.getMinutes(), d.getSeconds());
-        day = `${days[d.getDay()]}`;
-        date = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-        time = d.toString().substr(16, 8);
-        if (time > '12') {
-            time += ' PM';
-            if (time > '13') {
-                time = (parseInt(time) - 12).toString().padStart(2, '0') + time.substr(2);
-            }
-        } else {
-            if (time.startsWith('00')) {
-                time = '12' + time.substr(2);
-            }
-            time += ' AM';
-        }
-    }
-    time = `<div class="time">${time}</div>`;
+    if (timing) timer1 = d.getTime();
+    let h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
+    face.show(h, m, s);
+    let day = days[d.getDay()];
+    let date = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    let time = `<div class="time">${formatTime(h, m, s)}</div>`;
     if (timing) {
         time += `<div>${elapsed()}s</div>`;
         time += `<div class="split">${splitTime !== null ? splitTime + 's' : '&nbsp;'}</div>`;
@@ -153,9 +119,8 @@ function update() {
 function popout() {
     if (window.__TAURI_INTERNALS__) return;
     if (location === parent.location && window.opener === null && window.innerWidth > 500) {
-        let options =  `height=${initial_w}, width=${initial_h}, toolbar=no, menubar=no, scrollbars=no, resizable=yes, location=no, directories=no, status=no`;
-        open('https://clock.timkay.com/', 'clock', options);
-        // window.close();
+        open('https://clock.timkay.com/', 'clock',
+            'height=300,width=300,toolbar=no,menubar=no,scrollbars=no,resizable=yes,location=no,directories=no,status=no');
     }
 }
 
@@ -220,7 +185,6 @@ $(document).on('mouseup', e => {
     dragging = false;
 });
 
-
 let localVersion = null;
 
 function checkForUpdate() {
@@ -259,26 +223,3 @@ $(() => {
     });
     popout();
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

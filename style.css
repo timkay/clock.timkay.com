@@ -5,16 +5,12 @@ html, body {
     background: transparent;
     border: none;
     outline: none;
+    overflow: hidden;
+    cursor: pointer;
+    -webkit-app-region: drag;
 }
 * {
     box-sizing: border-box;
-}
-body {
-    overflow: hidden;
-    margin: 0;
-    background: transparent;
-    cursor: pointer !important;
-    -webkit-app-region: drag;
 }
 canvas {
     display: block;
@@ -23,60 +19,36 @@ canvas {
 }
 #face {
     position: absolute;
-    box-sizing: border-box;
     border-radius: 50%;
-    cursor: pointer !important;
+    cursor: pointer;
 }
 #clock {
     position: absolute;
     margin: 0;
     display: none;
-    box-sizing: border-box;
     border: 5px solid red;
     border-radius: 50%;
     background: transparent;
     padding-top: 60px;
     text-align: center;
     pointer-events: none;
-    cursor: pointer !important;
+    cursor: pointer;
 }
-
 #clock > div {
     padding-top: 0.42em;
     font-size: 1.33em;
     font-weight: bold;
-    cursor: pointer !important;
+    cursor: pointer;
 }
-
 .time {
     pointer-events: auto;
-    cursor: pointer !important;
+    cursor: pointer;
 }
-
-#grab {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    top: 35px;
-    right: 35px;
-}
-
-#grab {
-}
-
-svg {
-    width: 30px;
-    height: 30px;
-    z-index: -1;
-    fill: #ddd;
-}
-
 .split {
     font-size: 0.67em;
     font-weight: normal;
     padding-top: 0.08em !important;
 }
-
 .reset {
     cursor: pointer;
     color: red;
@@ -86,15 +58,6 @@ svg {
     padding-top: 0 !important;
     pointer-events: auto;
 }
-
-#stopwatch {
-    position: absolute;
-    text-align: center;
-    font-size: 12px;
-    color: white;
-    cursor: pointer !important;
-}
-
 #close {
     position: absolute;
     display: none;
@@ -105,7 +68,6 @@ svg {
     pointer-events: auto;
     z-index: 10;
 }
-
 .resize-handle {
     position: absolute;
     width: 16px;
@@ -119,19 +81,10 @@ svg {
 .resize-handle[data-direction="NorthEast"] { cursor: nesw-resize; }
 .resize-handle[data-direction="SouthWest"] { cursor: nesw-resize; }
 .resize-handle[data-direction="SouthEast"] { cursor: nwse-resize; }
-
 #version {
     position: fixed;
     bottom: 2px;
     right: 4px;
     font-size: 10px;
     color: white;
-}
-
-body:hover svg {
-    fill: black;
-}
-
-#grab:hover svg {
-    fill: red;
 }
