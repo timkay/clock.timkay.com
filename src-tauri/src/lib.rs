@@ -5,11 +5,19 @@ pub fn run() {
   tauri::Builder::default()
     .plugin(tauri_plugin_updater::Builder::new().build())
     .on_window_event(|window, event| {
-      if let tauri::WindowEvent::Resized(size) = event {
-        if size.width != size.height && size.width > 0 && size.height > 0 {
-          let s = std::cmp::max(size.width, size.height);
-          let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize::new(s, s)));
+      match event {
+        tauri::WindowEvent::Resized(size) => {
+          if size.width != size.height && size.width > 0 && size.height > 0 {
+            let s = std::cmp::max(size.width, size.height);
+            let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize::new(s, s)));
+          }
         }
+        tauri::WindowEvent::Moved(_) => {
+          if window.is_maximized().unwrap_or(false) {
+            let _ = window.unmaximize();
+          }
+        }
+        _ => {}
       }
     })
     .setup(|app| {
