@@ -19,6 +19,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout main
+          BEFORE=$(git rev-parse HEAD)
           git merge --ff-only ${{ github.sha }} || git merge --no-edit ${{ github.sha }}
           git push origin main
           git push origin --delete ${{ github.ref_name }}
+          echo "BEFORE=$BEFORE" >> $GITHUB_ENV
+
+      - name: Trigger release if Tauri code changed
+        run: |
+          if git diff --name-only $BEFORE HEAD | grep -q '^src-tauri/'; then
+            echo "Tauri files changed, triggering release build"
+            gh workflow run release.yml --ref main
+          else
+            echo "No Tauri changes, skipping release"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
