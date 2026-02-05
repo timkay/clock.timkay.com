@@ -14,7 +14,6 @@ body {
     margin: 0;
     background: transparent;
     cursor: pointer;
-    -webkit-app-region: drag;
 }
 canvas {
     display: block;
@@ -25,7 +24,6 @@ canvas {
     position: absolute;
     box-sizing: border-box;
     border-radius: 50%;
-    -webkit-app-region: drag;
     cursor: pointer;
 }
 #clock {
@@ -50,7 +48,6 @@ canvas {
 .time {
     pointer-events: auto;
     cursor: pointer;
-    -webkit-app-region: no-drag;
 }
 
 #grab {
@@ -85,7 +82,6 @@ svg {
     text-align: center;
     padding-top: 0 !important;
     pointer-events: auto;
-    -webkit-app-region: no-drag;
 }
 
 #stopwatch {
@@ -104,7 +100,6 @@ svg {
     font-size: 14px;
     line-height: 14px;
     pointer-events: auto;
-    -webkit-app-region: no-drag;
     z-index: 10;
 }
 
