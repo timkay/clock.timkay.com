@@ -77,6 +77,7 @@ function resize() {
         borderWidth: `${scale * 3.5}px`
     });
     $('#face').css({width: `${w}px`, height: `${w}px`, left: `${left}px`, top: `${top}px`});
+    $('#menu').css({display: 'block', left: `${left + 12}px`, top: `${top + 12}px`});
     $('#close').css({display: 'block', left: `${left + w - 24}px`, top: `${top + 12}px`});
     const hs = 16;
     $('[data-direction="NorthWest"]').css({left: `${left}px`, top: `${top}px`});
@@ -162,7 +163,7 @@ $(document).on('mousemove', e => {
 $(document).on('mouseup', e => {
     if (!dragStart) return;
     if (!dragging) {
-        if ($(e.target).closest('#close').length) {
+        if ($(e.target).closest('#close, #menu').length) {
             dragStart = null;
             dragging = false;
             return;
