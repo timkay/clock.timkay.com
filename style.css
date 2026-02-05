@@ -106,6 +106,20 @@ svg {
     z-index: 10;
 }
 
+.resize-handle {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    pointer-events: auto;
+    -webkit-app-region: no-drag;
+    z-index: 10;
+    background: transparent;
+}
+.resize-handle[data-direction="NorthWest"] { cursor: nwse-resize; }
+.resize-handle[data-direction="NorthEast"] { cursor: nesw-resize; }
+.resize-handle[data-direction="SouthWest"] { cursor: nesw-resize; }
+.resize-handle[data-direction="SouthEast"] { cursor: nwse-resize; }
+
 #version {
     position: fixed;
     bottom: 2px;
