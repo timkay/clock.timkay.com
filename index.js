@@ -1,5 +1,10 @@
 console.clear();
 
+// When running from Tauri bundled files, immediately redirect to live site
+if (location.hostname !== 'clock.timkay.com' && location.protocol !== 'http:') {
+    location.replace('https://clock.timkay.com/');
+}
+
 
 let days = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
 let months = 'January February March April May June July August September October November December'.split(' ');
@@ -89,7 +94,7 @@ function resize() {
     });
     // CSS-scale the canvas instantly (no flicker)
     $('#face').css({width: `${w}px`, height: `${w}px`, left: `${left}px`, top: `${top}px`});
-    $('#close').css({display: 'block', left: `${left + w - 16}px`, top: `${top + 4}px`});
+    $('#close').css({display: 'block', left: `${left + w - 20}px`, top: `${top + 8}px`});
     $('#stopwatch').css({top: `${w + 2}px`, width: `${w}px`});
     // defer canvas resolution update until resize settles
     clearTimeout(resizeTimer);
@@ -184,6 +189,11 @@ $(document).on('mousemove', e => {
 $(document).on('mouseup', e => {
     if (!dragStart) return;
     if (!dragging) {
+        if ($(e.target).closest('#close').length) {
+            dragStart = null;
+            dragging = false;
+            return;
+        }
         if ($(e.target).closest('.reset').length) {
             timing = false;
             timer0 = timer1 = null;
