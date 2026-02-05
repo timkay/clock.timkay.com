@@ -187,6 +187,31 @@ $(document).on('mouseup', e => {
 
 let localVersion = null;
 
+function notify(message) {
+    const pw = 400, ph = 200;
+    const px = (screen.width - pw) / 2;
+    const py = (screen.height - ph) / 2;
+    const popup = open('', '_blank',
+        `width=${pw},height=${ph},left=${px},top=${py},toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no`);
+    if (!popup) return;
+    popup.document.write(`<!DOCTYPE html>
+<html><head><style>
+  body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+         height: 100vh; font-family: sans-serif; background: #222; color: white; }
+  .message { font-size: 24px; text-align: center; padding: 20px; }
+  .dismiss { margin-top: 20px; padding: 10px 30px; font-size: 18px; cursor: pointer;
+             background: #c00; color: white; border: none; border-radius: 4px; }
+  .dismiss:hover { background: #e00; }
+</style></head><body>
+  <div class="message">${message}</div>
+  <button class="dismiss" onclick="window.close()">Dismiss</button>
+</body></html>`);
+    popup.document.close();
+}
+
+// expose globally so it can be called from console: notify("Test message")
+window.notify = notify;
+
 function checkForUpdate() {
     fetch('https://clock.timkay.com/version.json?' + Date.now())
         .then(r => r.json())
