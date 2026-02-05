@@ -94,6 +94,24 @@ svg {
     cursor: pointer;
 }
 
+#close {
+    position: absolute;
+    display: none;
+    cursor: pointer;
+    color: red;
+    font-size: 14px;
+    line-height: 14px;
+    pointer-events: auto;
+    -webkit-app-region: no-drag;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+body:hover #close {
+    opacity: 1;
+}
+
 #version {
     position: fixed;
     bottom: 2px;

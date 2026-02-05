@@ -93,6 +93,9 @@ function resize() {
     });
     // CSS-scale the canvas instantly (no flicker)
     $('#face').css({width: `${w}px`, height: `${w}px`, left: `${left}px`, top: `${top}px`});
+    const r = w / 2;
+    const offset = r * 0.7;
+    $('#close').css({display: 'block', left: `${left + r + offset}px`, top: `${top + r - offset}px`});
     $('#stopwatch').css({top: `${w + 2}px`, width: `${w}px`});
     // defer canvas resolution update until resize settles
     clearTimeout(resizeTimer);
@@ -234,6 +237,7 @@ $(() => {
     setInterval(update, 87);
     checkForUpdate();
     setInterval(checkForUpdate, 1000);
+    $('#close').on('click', () => window.close());
     popout();
 });
 
