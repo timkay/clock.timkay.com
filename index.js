@@ -163,7 +163,7 @@ $(document).on('mousemove', e => {
 $(document).on('mouseup', e => {
     if (!dragStart) return;
     if (!dragging) {
-        if ($(e.target).closest('#close, #menu').length) {
+        if ($(e.target).closest('#close, #menu, #menu-dropdown, #version').length) {
             dragStart = null;
             dragging = false;
             return;
@@ -267,13 +267,54 @@ $(() => {
     setInterval(update, 87);
     checkForUpdate();
     setInterval(checkForUpdate, 1000);
-    $('#close').on('click', () => {
+    function closeApp() {
         if (window.__TAURI_INTERNALS__) {
             window.__TAURI_INTERNALS__.invoke('plugin:window|close', { label: 'main' });
         } else {
             window.close();
         }
+    }
+
+    function showAbout() {
+        notify(`Clock ${localVersion || ''}\nclock.timkay.com`);
+    }
+
+    // menu toggle
+    $('#menu').on('click', () => {
+        const dd = $('#menu-dropdown');
+        if (dd.is(':visible')) {
+            dd.hide();
+        } else {
+            const pos = $('#menu').position();
+            dd.css({left: `${parseInt($('#menu').css('left'))}px`, top: `${parseInt($('#menu').css('top')) + 20}px`});
+            dd.show();
+        }
     });
+
+    // close menu on outside click
+    $(document).on('mousedown', e => {
+        if (!$(e.target).closest('#menu, #menu-dropdown').length) {
+            $('#menu-dropdown').hide();
+        }
+    });
+
+    // menu actions
+    $(document).on('click', '.menu-item', function() {
+        const action = $(this).data('action');
+        $('#menu-dropdown').hide();
+        if (action === 'notify') notify('Test notification');
+        else if (action === 'devtools') {
+            if (window.__TAURI_INTERNALS__) {
+                window.__TAURI_INTERNALS__.invoke('plugin:webview|internal_toggle_devtools');
+            }
+        }
+        else if (action === 'about') showAbout();
+        else if (action === 'close') closeApp();
+    });
+
+    $('#close').on('click', closeApp);
+    $('#version').on('click', showAbout);
+
     $(document).on('keydown', e => {
         if (e.key === 'n' || e.key === 'N') notify('Test notification');
     });
