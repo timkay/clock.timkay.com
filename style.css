@@ -13,7 +13,8 @@ body {
     overflow: hidden;
     margin: 0;
     background: transparent;
-    cursor: pointer;
+    cursor: pointer !important;
+    -webkit-app-region: drag;
 }
 canvas {
     display: block;
@@ -24,7 +25,7 @@ canvas {
     position: absolute;
     box-sizing: border-box;
     border-radius: 50%;
-    cursor: pointer;
+    cursor: pointer !important;
 }
 #clock {
     position: absolute;
@@ -37,19 +38,19 @@ canvas {
     padding-top: 60px;
     text-align: center;
     pointer-events: none;
-    cursor: pointer;
+    cursor: pointer !important;
 }
 
 #clock > div {
     padding-top: 0.42em;
     font-size: 1.33em;
     font-weight: bold;
-    cursor: pointer;
+    cursor: pointer !important;
 }
 
 .time {
     pointer-events: auto;
-    cursor: pointer;
+    cursor: pointer !important;
 }
 
 #grab {
@@ -91,7 +92,7 @@ svg {
     text-align: center;
     font-size: 12px;
     color: white;
-    cursor: pointer;
+    cursor: pointer !important;
 }
 
 #close {
