@@ -22,6 +22,18 @@ pub fn run() {
       }
     })
     .setup(|app| {
+      // Position window in upper right corner
+      if let Some(window) = app.get_webview_window("main") {
+        if let Ok(size) = window.outer_size() {
+          if let Some(monitor) = window.current_monitor().ok().flatten() {
+            let screen = monitor.size();
+            let x = screen.width as i32 - size.width as i32 - 10;
+            let y = 10;
+            let _ = window.set_position(tauri::Position::Physical(tauri::PhysicalPosition::new(x, y)));
+          }
+        }
+      }
+
       if cfg!(debug_assertions) {
         app.handle().plugin(
           tauri_plugin_log::Builder::default()
