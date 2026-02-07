@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Clock",
-  "version": "0.5.12",
+  "version": "0.5.13",
   "identifier": "com.timkay.clock",
   "build": {
     "frontendDist": "../dist",
@@ -18,7 +18,8 @@
         "resizable": true,
         "decorations": false,
         "transparent": true,
-        "alwaysOnTop": true
+        "alwaysOnTop": true,
+        "skipTaskbar": true
       }
     ],
     "security": {
