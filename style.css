@@ -67,7 +67,8 @@ canvas {
     pointer-events: auto;
     -webkit-app-region: no-drag;
     z-index: 10;
-    -webkit-text-stroke: 1px #000;
+    -webkit-text-stroke: 3px #000;
+    paint-order: stroke fill;
 }
 #menu-dropdown {
     display: none;
@@ -113,7 +114,8 @@ canvas {
     line-height: 14px;
     pointer-events: auto;
     z-index: 10;
-    -webkit-text-stroke: 1px #000;
+    -webkit-text-stroke: 3px #000;
+    paint-order: stroke fill;
 }
 .resize-handle {
     position: absolute;
