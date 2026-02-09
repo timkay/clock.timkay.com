@@ -67,8 +67,9 @@ canvas {
     pointer-events: auto;
     -webkit-app-region: no-drag;
     z-index: 10;
-    -webkit-text-stroke: 3px #000;
+    -webkit-text-stroke: 2px #000;
     paint-order: stroke fill;
+    text-shadow: 1px 1px 0 #000;
 }
 #menu-dropdown {
     display: none;
@@ -114,8 +115,9 @@ canvas {
     line-height: 14px;
     pointer-events: auto;
     z-index: 10;
-    -webkit-text-stroke: 3px #000;
+    -webkit-text-stroke: 2px #000;
     paint-order: stroke fill;
+    text-shadow: 1px 1px 0 #000;
 }
 .resize-handle {
     position: absolute;
@@ -139,8 +141,9 @@ canvas {
     pointer-events: auto;
     cursor: pointer;
     -webkit-app-region: no-drag;
-    -webkit-text-stroke: 3px #000;
+    -webkit-text-stroke: 2px #000;
     paint-order: stroke fill;
+    text-shadow: 1px 1px 0 #000;
 }
 #overlay {
     display: none;
