@@ -1,12 +1,16 @@
-console.clear();
-
-// When running from Tauri bundled files, immediately redirect to live site
+// When running from Tauri bundled files, redirect to live site if reachable
 if (location.hostname !== 'clock.timkay.com' && location.protocol !== 'http:') {
-    location.replace('https://clock.timkay.com/');
+    fetch('https://clock.timkay.com/version.json?' + Date.now(), { mode: 'cors' })
+        .then(r => { if (r.ok) location.replace('https://clock.timkay.com/') })
+        .catch(() => { /* site unreachable, stay on bundled files */ })
 }
 
 let days = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
 let months = 'January February March April May June July August September October November December'.split(' ');
+
+function escapeHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+}
 
 class ClockFace {
     constructor() {
@@ -208,8 +212,14 @@ body { margin: 0; display: flex; flex-direction: column; align-items: center; ju
                 label,
                 url: `data:text/html,${encodeURIComponent(`<!DOCTYPE html>
 <html><head><style>${popupStyle} body { -webkit-app-region: drag; } .dismiss { -webkit-app-region: no-drag; }</style></head><body>
-<div class="message">${message}</div>
-<button class="dismiss" onclick="window.__TAURI_INTERNALS__.invoke('plugin:window|close',{label:'${label}'})">Dismiss</button>
+<div class="message">${escapeHtml(message)}</div>
+<button class="dismiss" onclick="try{window.__TAURI_INTERNALS__.invoke('plugin:window|close',{label:'${label}'})}catch(e){window.close()}">Dismiss</button>
+<div class="hint">or press any key</div>
+<script>
+function dismissWindow(){try{window.__TAURI_INTERNALS__.invoke('plugin:window|close',{label:'${label}'})}catch(e){window.close()}}
+document.onkeydown=dismissWindow;
+setTimeout(dismissWindow,30000);
+</script>
 </body></html>`)}`,
                 width: pw,
                 height: ph,
@@ -229,7 +239,7 @@ body { margin: 0; display: flex; flex-direction: column; align-items: center; ju
         }
         popup.document.write(`<!DOCTYPE html>
 <html><head><style>${popupStyle}</style></head><body>
-<div class="message">${message}</div>
+<div class="message">${escapeHtml(message)}</div>
 <button class="dismiss" onclick="window.close()">Dismiss</button>
 <div class="hint">or press any key</div>
 <script>document.onkeydown = () => window.close();</script>
@@ -269,7 +279,7 @@ function showToast(message, duration = 4000) {
         toast.id = 'toast';
         document.body.appendChild(toast);
     }
-    toast.innerHTML = `${message}<div class="toast-hint">click to dismiss</div>`;
+    toast.innerHTML = `${escapeHtml(message)}<div class="toast-hint">click to dismiss</div>`;
     toast.style.display = 'block';
     toast.onclick = () => { toast.style.display = 'none'; };
     clearTimeout(toast._timer);
@@ -302,7 +312,7 @@ $(() => {
     update();
     setInterval(update, 87);
     checkForUpdate();
-    setInterval(checkForUpdate, 1000);
+    setInterval(checkForUpdate, 5000);
 
     // Get Tauri app version
     if (window.__TAURI_INTERNALS__) {
