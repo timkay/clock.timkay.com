@@ -26,15 +26,12 @@ self.addEventListener("activate", e => {
 });
 
 self.addEventListener("fetch", e => {
-    // version.json: network-first so live updates are detected
-    if (e.request.url.includes('version.json')) {
-        e.respondWith(
-            fetch(e.request).catch(() => caches.match(e.request))
-        );
-        return;
-    }
-    // all other assets: cache-first with network fallback
+    // network-first for everything, cache as offline fallback
     e.respondWith(
-        caches.match(e.request).then(cached => cached || fetch(e.request))
+        fetch(e.request).then(response => {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+            return response;
+        }).catch(() => caches.match(e.request))
     );
 });
