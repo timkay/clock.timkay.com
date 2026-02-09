@@ -124,10 +124,23 @@ canvas {
     z-index: 10;
     background: transparent;
 }
+.resize-handle::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.35);
+    box-shadow: 0 0 1px 0 rgba(0,0,0,0.8);
+}
 .resize-handle[data-direction="NorthWest"] { cursor: nwse-resize; }
+.resize-handle[data-direction="NorthWest"]::after { top: 2px; left: 2px; }
 .resize-handle[data-direction="NorthEast"] { cursor: nesw-resize; }
+.resize-handle[data-direction="NorthEast"]::after { top: 2px; right: 2px; }
 .resize-handle[data-direction="SouthWest"] { cursor: nesw-resize; }
+.resize-handle[data-direction="SouthWest"]::after { bottom: 2px; left: 2px; }
 .resize-handle[data-direction="SouthEast"] { cursor: nwse-resize; }
+.resize-handle[data-direction="SouthEast"]::after { bottom: 2px; right: 2px; }
 #version {
     position: fixed;
     bottom: 2px;
