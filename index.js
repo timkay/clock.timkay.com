@@ -71,8 +71,8 @@ function resize() {
     const left = Math.max(0, (ww - w) / 2);
     const top = Math.max(0, (wh - w) / 2);
     const scale = w / 250;
-    const fs = timing ? 16.8 : 21.8;
-    const pt = timing ? 42 : 60;
+    const fs = timing ? 19 : 21.8;
+    const pt = timing ? 34 : 60;
     $('#clock').css({
         width: `${w}px`, height: `${w}px`, display: 'block',
         left: `${left}px`, top: `${top}px`,
@@ -115,8 +115,8 @@ function update() {
         time += `<div class="reset">✕</div>`;
     }
     const scale = w / 250;
-    const fs = timing ? 16.8 : 21.8;
-    const pt = timing ? 42 : 60;
+    const fs = timing ? 19 : 21.8;
+    const pt = timing ? 34 : 60;
     $('#clock').css({fontSize: `${scale * fs}px`, paddingTop: `${scale * pt}px`});
     $('#clock').html([day, date, time].join('\n'));
 }
