@@ -130,8 +130,8 @@ canvas {
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: rgba(0,0,0,0.35);
-    box-shadow: 0 0 1px 0 rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.7);
+    box-shadow: 0 0 1px 1px rgba(0,0,0,0.9);
 }
 .resize-handle[data-direction="NorthWest"] { cursor: nwse-resize; }
 .resize-handle[data-direction="NorthWest"]::after { top: 2px; left: 2px; }
