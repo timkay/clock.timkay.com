@@ -312,7 +312,7 @@ $(() => {
     update();
     setInterval(update, 87);
     checkForUpdate();
-    setInterval(checkForUpdate, 5000);
+    setInterval(checkForUpdate, 1000);
 
     // Get Tauri app version
     if (window.__TAURI_INTERNALS__) {
