@@ -13,9 +13,9 @@
 ├── style.css           # All styling: layout, clock face, circular border
 ├── jquery.js           # jQuery 3.3.1 (vendored, not from CDN)
 ├── manifest.json       # PWA manifest (standalone display, yellow/red theme)
-├── serviceworker.js    # Minimal service worker (install/activate, no caching strategy)
+├── serviceworker.js    # Service worker (network-first with offline cache fallback)
 ├── icon.png            # 192x192 PWA icon
-├── _headers            # Netlify header config (Content-Type for manifest.json)
+├── _headers            # Cloudflare Pages header config (Content-Type for manifest, no-cache for version.json)
 ├── package.json        # npm config (Tauri CLI dev dependency, `tauri` script)
 ├── src-tauri/          # Tauri desktop app
 │   ├── tauri.conf.json # Tauri config (window, build, bundle settings)
@@ -52,7 +52,7 @@ The Tauri wrapper in `src-tauri/` builds a native desktop application. The `befo
 1. `index.html` loads `style.css`, `jquery.js`, then `index.js` (as ES6 module)
 2. `index.js` on DOM ready: calls `resize()` to create `ClockFace`, calls `update()`, starts `setInterval(update, 87)` loop, and calls `popout()`
 3. `popout()` is skipped when running inside Tauri (checks `window.__TAURI_INTERNALS__`)
-4. Service worker is registered for PWA support but does no caching
+4. Service worker is registered for PWA support with network-first fetch strategy (cache as offline fallback)
 
 ### Key Components in index.js
 
@@ -75,8 +75,8 @@ The Tauri wrapper in `src-tauri/` builds a native desktop application. The `befo
 ### PWA Configuration
 
 - `manifest.json`: standalone display, yellow background, red theme, 192x192 icon
-- `serviceworker.js`: registers install/activate but passes all fetches to network (no offline caching)
-- `_headers`: Netlify config setting `Content-Type: application/manifest+json` for manifest
+- `serviceworker.js`: network-first fetch strategy, pre-caches assets on install, falls back to cache when offline
+- `_headers`: Cloudflare Pages config — `Content-Type: application/manifest+json` for manifest, `Cache-Control: no-cache` for version.json
 
 ## Code Conventions
 
@@ -142,7 +142,7 @@ apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librs
 
 ### Deployment
 
-The web version is deployed as static files to https://clock.timkay.com/ (via Netlify, per the `_headers` file). Push to the appropriate branch and deploy.
+The web version is deployed as static files to https://clock.timkay.com/ via Cloudflare Pages (auto-deploys from `main` branch). Push to a `claude/*` branch, the auto-merge workflow merges to main, and Cloudflare Pages deploys automatically.
 
 ### Testing
 
@@ -173,7 +173,7 @@ To deploy a frontend change that all running apps pick up automatically:
 3. Use the third version number for minor changes (e.g., `v0.2.5` → `v0.2.6`)
 4. Commit and push to the `claude/*` session branch
 5. The `auto-merge.yml` GitHub Action merges to main and deletes the branch
-6. Netlify deploys the updated site from main
+6. Cloudflare Pages deploys the updated site from main
 7. Running apps detect the version mismatch within 1 second and reload
 
 No binary rebuild is needed for JS/CSS/HTML-only changes. Only rebuild the binary when changing Rust code in `src-tauri/` or Tauri config.
@@ -187,7 +187,7 @@ To minimize latency when deploying updates:
 3. **Bump version in parallel** — Edit `index.html` and `version.json` together with the code changes, all in one commit.
 4. **Single commit** — Combine all related changes into one commit to minimize push overhead.
 
-The bottleneck is GitHub Actions (~10s to auto-merge) + Netlify deploy, not local work.
+The bottleneck is GitHub Actions (~10s to auto-merge) + Cloudflare Pages deploy, not local work.
 
 ### CI/CD Pipelines
 
@@ -203,7 +203,7 @@ The Tauri binary checks for updates via `tauri-plugin-updater` every 30 seconds 
 - The update interval is **87ms** — chosen to balance smooth hand movement against CPU usage
 - Time conversion uses string comparison (`time > '12'`) for AM/PM logic, not numeric comparison
 - The clock defaults to **local time** (the `utc` const is hardcoded to `false`)
-- `console.clear()` is called at the top of `index.js` on every module load
+- `console.clear()` was removed (previously wiped dev console on every module load)
 - Deprecated files (`webEdit.js`, `weedit.js`) remain in the repo but are not loaded
 - The `dist/` directory is a build artifact (gitignored) — web assets are copied there by the Tauri build command
 - `node_modules/` is gitignored
