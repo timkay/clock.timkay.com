@@ -127,20 +127,20 @@ canvas {
 .resize-handle::after {
     content: '';
     position: absolute;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: rgba(0,0,0,0.7);
-    box-shadow: 0 0 1px 1px rgba(0,0,0,0.9);
+    width: 10px;
+    height: 10px;
+    border-color: rgba(0,0,0,0.6);
+    border-style: solid;
+    border-width: 0;
 }
 .resize-handle[data-direction="NorthWest"] { cursor: nwse-resize; }
-.resize-handle[data-direction="NorthWest"]::after { top: 2px; left: 2px; }
+.resize-handle[data-direction="NorthWest"]::after { top: 0; left: 0; border-top-width: 2px; border-left-width: 2px; }
 .resize-handle[data-direction="NorthEast"] { cursor: nesw-resize; }
-.resize-handle[data-direction="NorthEast"]::after { top: 2px; right: 2px; }
+.resize-handle[data-direction="NorthEast"]::after { top: 0; right: 0; border-top-width: 2px; border-right-width: 2px; }
 .resize-handle[data-direction="SouthWest"] { cursor: nesw-resize; }
-.resize-handle[data-direction="SouthWest"]::after { bottom: 2px; left: 2px; }
+.resize-handle[data-direction="SouthWest"]::after { bottom: 0; left: 0; border-bottom-width: 2px; border-left-width: 2px; }
 .resize-handle[data-direction="SouthEast"] { cursor: nwse-resize; }
-.resize-handle[data-direction="SouthEast"]::after { bottom: 2px; right: 2px; }
+.resize-handle[data-direction="SouthEast"]::after { bottom: 0; right: 0; border-bottom-width: 2px; border-right-width: 2px; }
 #version {
     position: fixed;
     bottom: 2px;
