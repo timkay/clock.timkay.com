@@ -146,7 +146,9 @@ function popout() {
         if (popup) {
             popoutAttempted = true;
             popup.focus();
-            history.back();
+            // App-hosted tabs may still be committing their navigation here;
+            // defer Back so Chrome does not discard it during initial load.
+            setTimeout(() => history.back(), 250);
         }
     }
 }
