@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clock-v2';
+const CACHE_NAME = 'clock-v3';
 const ASSETS = [
     './',
     './index.html',
@@ -26,11 +26,17 @@ self.addEventListener("activate", e => {
 });
 
 self.addEventListener("fetch", e => {
-    // network-first for everything, cache as offline fallback
+    // CacheStorage only supports GET requests. Let POST and other methods
+    // pass through untouched.
+    if (e.request.method !== 'GET') return;
+
+    // Network-first for successful GETs, cache as offline fallback.
     e.respondWith(
         fetch(e.request).then(response => {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+            if (response.ok) {
+                const clone = response.clone();
+                e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone)));
+            }
             return response;
         }).catch(() => caches.match(e.request))
     );
