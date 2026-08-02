@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**clock.timkay.com** is a minimalist analog/digital clock Progressive Web App (PWA) with a Tauri desktop wrapper. It renders a canvas-based analog clock face with overlaid digital time, day, and date text. The web version is deployed as a static site at https://clock.timkay.com/. The Tauri build produces a native desktop app with always-on-top, frameless, transparent window.
+**clock.timkay.com** is a minimalist web-based analog/digital clock with a stopwatch. It renders a canvas-based analog clock face with overlaid digital time, day, and date text and is deployed as a static site at https://clock.timkay.com/.
 
 ## Repository Structure
 
@@ -12,20 +12,8 @@
 ├── index.js            # Core clock logic (ES6 module): ClockFace class, update loop, event handling
 ├── style.css           # All styling: layout, clock face, circular border
 ├── jquery.js           # jQuery 3.3.1 (vendored, not from CDN)
-├── manifest.json       # PWA manifest (standalone display, yellow/red theme)
-├── serviceworker.js    # Service worker (network-first with offline cache fallback)
-├── icon.png            # 192x192 PWA icon
-├── _headers            # Cloudflare Pages header config (Content-Type for manifest, no-cache for version.json)
-├── package.json        # npm config (Tauri CLI dev dependency, `tauri` script)
-├── src-tauri/          # Tauri desktop app
-│   ├── tauri.conf.json # Tauri config (window, build, bundle settings)
-│   ├── Cargo.toml      # Rust dependencies (tauri, tauri-plugin-log)
-│   ├── src/
-│   │   ├── main.rs     # Binary entry point (calls clock_lib::run)
-│   │   └── lib.rs      # Tauri app setup (Builder, plugins)
-│   ├── build.rs        # Tauri build script
-│   ├── capabilities/   # Tauri permission capabilities
-│   └── icons/          # App icons for bundling (icns, ico, png)
+├── icon.png            # Site icon
+├── _headers            # Cloudflare Pages header config
 ├── webEdit.js          # Deprecated: asset display utility
 ├── weedit.js           # Deprecated: web editor integration (removed from HTML)
 └── README.md           # Minimal project title
@@ -33,26 +21,13 @@
 
 ## Architecture
 
-### Web (Static Site)
-
-The web version is a zero-build static site. The frontend files (`index.html`, `index.js`, `style.css`, `jquery.js`, etc.) are served directly with no transpilation, bundling, or minification.
-
-### Tauri (Desktop App)
-
-The Tauri wrapper in `src-tauri/` builds a native desktop application. The `beforeBuildCommand` copies web assets into a `dist/` directory (excluded from git) which Tauri embeds into the binary.
-
-**Window configuration** (`src-tauri/tauri.conf.json`):
-- 250x250, frameless (`decorations: false`), transparent, always-on-top
-- Resizable
-
-**Platform webviews**: WebKitGTK on Linux, WebView2 (Edge) on Windows, WKWebView on macOS.
+The site is a zero-build static site. The frontend files (`index.html`, `index.js`, `style.css`, `jquery.js`, etc.) are served directly with no transpilation, bundling, or minification.
 
 ### Entry Point Flow
 
 1. `index.html` loads `style.css`, `jquery.js`, then `index.js` (as ES6 module)
 2. `index.js` on DOM ready: calls `resize()` to create `ClockFace`, calls `update()`, starts `setInterval(update, 87)` loop, and calls `popout()`
-3. `popout()` is skipped when running inside Tauri (checks `window.__TAURI_INTERNALS__`)
-4. Service worker is registered for PWA support with network-first fetch strategy (cache as offline fallback)
+3. `popout()` opens or reuses a named minimal browser window when the host is wider than 500px
 
 ### Key Components in index.js
 
@@ -62,7 +37,7 @@ The Tauri wrapper in `src-tauri/` builds a native desktop application. The `befo
   - `show(h, m, s)` — Clears canvas and draws all three hands (hour at 3/8, minute at 3/4, second at 95/100 length)
 - **`resize()`** — Recalculates dimensions to keep the clock square, fitting the smaller of window width/height
 - **`update()`** — Called every 87ms. Reads current time, updates analog hands via `face.show()`, formats digital display with day/date/time
-- **`popout()`** — Opens a small popup window if viewed in a large browser window (disabled in Tauri)
+- **`popout()`** — Opens or reuses the `_clock` popup if viewed in a large browser window
 - **Click handler** — Clicking the clock face toggles an elapsed-time stopwatch display
 
 ### Styling (style.css)
@@ -71,12 +46,6 @@ The Tauri wrapper in `src-tauri/` builds a native desktop application. The `befo
 - The `#clock` pre element is positioned absolutely and overlaid on the canvas
 - The `#face` canvas is also absolutely positioned
 - Square layout enforced by JS setting width/height to `min(windowWidth, windowHeight)`
-
-### PWA Configuration
-
-- `manifest.json`: standalone display, yellow background, red theme, 192x192 icon
-- `serviceworker.js`: network-first fetch strategy, pre-caches assets on install, falls back to cache when offline
-- `_headers`: Cloudflare Pages config — `Content-Type: application/manifest+json` for manifest, `Cache-Control: no-cache` for version.json
 
 ## Code Conventions
 
@@ -89,11 +58,6 @@ The Tauri wrapper in `src-tauri/` builds a native desktop application. The `befo
 - Destructuring assignment for array unpacking: `[this.w, this.h] = [w, w]`
 - Template literals for string formatting
 - No semicolons at end of lines is mixed — some lines have them, some don't. Follow the style of surrounding code when making changes.
-
-### Rust (src-tauri)
-
-- Standard Tauri v2 boilerplate. Minimal custom Rust code.
-- Crate name: `clock`, lib name: `clock_lib`
 
 ### CSS
 
@@ -121,25 +85,6 @@ npx serve .
 
 Open `http://localhost:8000` in a browser.
 
-### Tauri Development
-
-```sh
-npm run tauri dev       # Dev mode with hot reload (requires local server on port 8000)
-npm run tauri build     # Release build (copies assets to dist/, compiles Rust, produces bundles)
-```
-
-**Linux system dependencies** (required for build):
-```sh
-apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0-dev libjavascriptcoregtk-4.1-dev
-```
-
-**Build outputs** (in `src-tauri/target/release/bundle/`):
-- `.deb` (Debian/Ubuntu)
-- `.rpm` (Fedora/RHEL)
-- `.AppImage` (portable Linux)
-- `.msi`/`.exe` (Windows, when built on Windows)
-- `.dmg`/`.app` (macOS, when built on macOS)
-
 ### Deployment
 
 The web version is deployed as static files to https://clock.timkay.com/ via Cloudflare Pages (auto-deploys from `main` branch). Push to a `claude/*` branch, the auto-merge workflow merges to main, and Cloudflare Pages deploys automatically.
@@ -152,17 +97,16 @@ There are no automated tests. Verify changes visually by loading the page and co
 - Day and date display correctly
 - Click-to-time stopwatch toggles on/off
 - Layout stays square and responsive on window resize
-- For Tauri: window is frameless, transparent, and stays on top
 
 ## Live Update System
 
-The Tauri desktop app and the website both support live JS/CSS updates without rebuilding the binary.
+The website checks for deployed frontend updates while it is open.
 
 ### How it works
 
-1. `index.js` checks `https://clock.timkay.com/version.json` every 1 second
+1. `index.js` checks `https://clock.timkay.com/version.json` every 30 seconds
 2. If the version in `version.json` differs from the `#version` span in `index.html`, the page does `location.replace('https://clock.timkay.com/')` to reload from the live site
-3. This works in all contexts: Tauri (local files), Tauri (after redirect to website), and browser
+3. Open browser clocks reload when a new version is deployed
 
 ### Making a JS/CSS change
 
@@ -175,8 +119,6 @@ To deploy a frontend change that all running apps pick up automatically:
 5. The `auto-merge.yml` GitHub Action merges to main and deletes the branch
 6. Cloudflare Pages deploys the updated site from main
 7. Running apps detect the version mismatch within 1 second and reload
-
-No binary rebuild is needed for JS/CSS/HTML-only changes. Only rebuild the binary when changing Rust code in `src-tauri/` or Tauri config.
 
 ### Fast turnaround for changes
 
@@ -192,21 +134,13 @@ The bottleneck is GitHub Actions (~10s to auto-merge) + Cloudflare Pages deploy,
 ### CI/CD Pipelines
 
 - **`.github/workflows/auto-merge.yml`** — Triggered on push to `claude/**`. Merges the branch to main and deletes it.
-- **`.github/workflows/release.yml`** — Triggered on push to `main` or `v*` tags. Builds Tauri binaries for Linux, macOS, and Windows. Creates a GitHub Release with `latest.json` for the Tauri auto-updater.
-
-### Binary auto-updater
-
-The Tauri binary checks for updates via `tauri-plugin-updater` every 30 seconds (configured in `src-tauri/src/lib.rs`). The updater endpoint points to GitHub Releases (`latest.json`). This is separate from the JS live update — it handles Rust/Tauri binary updates.
 
 ## Important Details
 
-- The update interval is **87ms** — chosen to balance smooth hand movement against CPU usage
-- Time conversion uses string comparison (`time > '12'`) for AM/PM logic, not numeric comparison
-- The clock defaults to **local time** (the `utc` const is hardcoded to `false`)
+- The update interval is **100ms** while the page is visible
+- The clock uses the browser's local time
 - `console.clear()` was removed (previously wiped dev console on every module load)
 - Deprecated files (`webEdit.js`, `weedit.js`) remain in the repo but are not loaded
-- The `dist/` directory is a build artifact (gitignored) — web assets are copied there by the Tauri build command
-- `node_modules/` is gitignored
 
 ## Commit Style
 

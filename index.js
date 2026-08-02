@@ -1,10 +1,3 @@
-// When running from Tauri bundled files, redirect to live site if reachable
-if (location.hostname !== 'clock.timkay.com' && location.protocol !== 'http:') {
-    fetch('https://clock.timkay.com/version.json?' + Date.now(), { mode: 'cors' })
-        .then(r => { if (r.ok) location.replace('https://clock.timkay.com/') })
-        .catch(() => { /* site unreachable, stay on bundled files */ })
-}
-
 let days = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
 let months = 'January February March April May June July August September October November December'.split(' ');
 
@@ -111,11 +104,6 @@ function resize() {
     $('#face').css({width: `${w}px`, height: `${w}px`, left: `${left}px`, top: `${top}px`});
     $('#menu').css({display: 'block', left: `${left + 12}px`, top: `${top + 12}px`});
     $('#close').css({display: 'block', left: `${left + w - 42}px`, top: `${top + 12}px`});
-    const hs = 16;
-    $('[data-direction="NorthWest"]').css({left: `${left}px`, top: `${top}px`});
-    $('[data-direction="NorthEast"]').css({left: `${left + w - hs}px`, top: `${top}px`});
-    $('[data-direction="SouthWest"]').css({left: `${left}px`, top: `${top + w - hs}px`});
-    $('[data-direction="SouthEast"]').css({left: `${left + w - hs}px`, top: `${top + w - hs}px`});
     // defer canvas resolution update until resize settles
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
@@ -151,9 +139,8 @@ function update() {
 }
 
 function popout() {
-    if (window.__TAURI_INTERNALS__) return;
     if (location === parent.location && window.opener === null && window.innerWidth > 500) {
-        const popup = open(location.href, 'clock',
+        const popup = open(location.href, '_clock',
             'height=300,width=300,toolbar=no,menubar=no,scrollbars=no,resizable=yes,location=no,directories=no,status=no');
         if (popup) {
             popup.focus();
@@ -179,70 +166,36 @@ function popout() {
     }
 }
 
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/serviceworker.js")
-        .then(() => console.log("Service Worker registered"))
-        .catch(err => console.error("Service Worker fail", err));
+// Remove the retired PWA worker and its offline caches from returning browsers.
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations()
+        .then(registrations => Promise.all(registrations.map(registration => registration.unregister())))
+        .catch(() => {});
+}
+if ('caches' in window) {
+    caches.keys()
+        .then(keys => Promise.all(keys.filter(key => key.startsWith('clock-')).map(key => caches.delete(key))))
+        .catch(() => {});
 }
 
-let dragStart = null;
-let dragging = false;
-
-$(document).on('mousedown', e => {
-    const handle = $(e.target).closest('.resize-handle');
-    if (handle.length && window.__TAURI_INTERNALS__) {
-        e.preventDefault();
-        window.__TAURI_INTERNALS__.invoke('plugin:window|start_resize_dragging', {
-            label: 'main',
-            value: handle.data('direction')
-        });
-        return;
+$(document).on('click', e => {
+    if ($(e.target).closest('#close, #menu, #menu-dropdown, #version, #overlay, #toast').length) return;
+    if ($(e.target).closest('.reset').length) {
+        timing = false;
+        timer0 = timer1 = null;
+        splitTime = null;
+    } else if (!timing) {
+        timing = true;
+        timer0 = Date.now();
+        timer1 = Date.now();
+    } else {
+        timer1 = Date.now();
+        splitTime = elapsed();
     }
-    dragStart = { x: e.screenX, y: e.screenY };
-    dragging = false;
-});
-
-$(document).on('mousemove', e => {
-    if (!dragStart) return;
-    const dx = Math.abs(e.screenX - dragStart.x);
-    const dy = Math.abs(e.screenY - dragStart.y);
-    if (!dragging && (dx > 3 || dy > 3)) {
-        dragging = true;
-        if (window.__TAURI_INTERNALS__) {
-            window.__TAURI_INTERNALS__.invoke('plugin:window|start_dragging', { label: 'main' })
-        }
-    }
-});
-
-$(document).on('mouseup', e => {
-    if (!dragStart) return;
-    if (!dragging) {
-        if ($(e.target).closest('#close, #menu, #menu-dropdown, #version, #overlay, #toast').length) {
-            dragStart = null;
-            dragging = false;
-            return;
-        }
-        if ($(e.target).closest('.reset').length) {
-            timing = false;
-            timer0 = timer1 = null;
-            splitTime = null;
-        } else if (!timing) {
-            timing = true;
-            timer0 = Date.now();
-            timer1 = Date.now();
-        } else {
-            timer1 = Date.now();
-            splitTime = elapsed();
-        }
-        update();
-    }
-    dragStart = null;
-    dragging = false;
+    update();
 });
 
 let localVersion = null;
-
-let notifyCount = 0;
 
 function notify(message) {
     const pw = 500, ph = 250;
@@ -255,47 +208,22 @@ body { margin: 0; display: flex; flex-direction: column; align-items: center; ju
            box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
 .dismiss:hover { background: linear-gradient(135deg, #e00, #b00); }
 .hint { font-size: 12px; color: #666; margin-top: 16px; }`;
-    if (window.__TAURI_INTERNALS__) {
-        const label = `notify-${++notifyCount}`;
-        window.__TAURI_INTERNALS__.invoke('plugin:webview|create_webview_window', {
-            options: {
-                label,
-                url: `data:text/html,${encodeURIComponent(`<!DOCTYPE html>
-<html><head><style>${popupStyle} body { -webkit-app-region: drag; } .dismiss { -webkit-app-region: no-drag; }</style></head><body>
-<div class="message">${escapeHtml(message)}</div>
-<button class="dismiss" onclick="try{window.__TAURI_INTERNALS__.invoke('plugin:window|close',{label:'${label}'})}catch(e){window.close()}">Dismiss</button>
-<div class="hint">or press any key</div>
-<script>
-function dismissWindow(){try{window.__TAURI_INTERNALS__.invoke('plugin:window|close',{label:'${label}'})}catch(e){window.close()}}
-document.onkeydown=dismissWindow;
-setTimeout(dismissWindow,30000);
-</script>
-</body></html>`)}`,
-                width: pw,
-                height: ph,
-                center: true,
-                alwaysOnTop: true,
-                decorations: false,
-            }
-        }).catch(() => showToast(message));
-    } else {
-        const px = (screen.width - pw) / 2;
-        const py = (screen.height - ph) / 2;
-        const popup = open('', '_blank',
-            `width=${pw},height=${ph},left=${px},top=${py},toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no`);
-        if (!popup) {
-            showToast(message);
-            return;
-        }
-        popup.document.write(`<!DOCTYPE html>
+    const px = (screen.width - pw) / 2;
+    const py = (screen.height - ph) / 2;
+    const popup = open('', '_blank',
+        `width=${pw},height=${ph},left=${px},top=${py},toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no`);
+    if (!popup) {
+        showToast(message);
+        return;
+    }
+    popup.document.write(`<!DOCTYPE html>
 <html><head><style>${popupStyle}</style></head><body>
 <div class="message">${escapeHtml(message)}</div>
 <button class="dismiss" onclick="window.close()">Dismiss</button>
 <div class="hint">or press any key</div>
 <script>document.onkeydown = () => window.close();</script>
 </body></html>`);
-        popup.document.close();
-    }
+    popup.document.close();
 }
 
 window.notify = notify;
@@ -364,19 +292,8 @@ $(() => {
     checkForUpdate();
     setInterval(checkForUpdate, 30000);
 
-    // Get Tauri app version
-    if (window.__TAURI_INTERNALS__) {
-        window.__TAURI_INTERNALS__.invoke('plugin:app|version')
-            .then(v => { $('#app-version').text('v' + v); })
-            .catch(() => {});
-    }
-
     function closeApp() {
-        if (window.__TAURI_INTERNALS__) {
-            window.__TAURI_INTERNALS__.invoke('plugin:window|close', { label: 'main' });
-        } else {
-            window.close();
-        }
+        window.close();
     }
 
     function showAbout() {
@@ -417,14 +334,6 @@ $(() => {
         const action = $(this).data('action');
         $('#menu-dropdown').hide();
         if (action === 'notify') notify('Test notification');
-        else if (action === 'devtools') {
-            if (window.__TAURI_INTERNALS__) {
-                window.__TAURI_INTERNALS__.invoke('plugin:webview|internal_toggle_devtools')
-                    .catch(() => showToast('Dev Tools not available'));
-            } else {
-                showToast('Dev Tools requires Tauri');
-            }
-        }
         else if (action === 'about') showAbout();
         else if (action === 'close') closeApp();
     });
