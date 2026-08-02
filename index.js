@@ -139,7 +139,7 @@ function update() {
 }
 
 function popout() {
-    if (location === parent.location && window.opener === null && window.innerWidth > 500) {
+    if (location === parent.location && window.innerWidth > 500) {
         const popup = open('https://clock.timkay.com/', 'clock',
             'height=300,width=300,toolbar=no,menubar=no,scrollbars=no,resizable=yes,location=no,directories=no,status=no');
         if (popup) {
