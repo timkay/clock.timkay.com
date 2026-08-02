@@ -139,54 +139,14 @@ function update() {
 }
 
 function popout() {
-    // A popup opened by this page has an opener; the host tab does not.
-    const isPopout = window.opener !== null;
-    if (!isPopout) {
-        const leaveHost = () => {
-            if (history.length > 1) {
-                history.back();
-            } else {
-                window.close();
-            }
-
-            // A directly opened tab has nowhere to go back to, and browsers
-            // generally refuse to close it. Keep that fallback unobtrusive.
-            setTimeout(() => {
-                document.body.classList.add('popout-launched');
-                document.body.innerHTML = `
-                    <main class="launch-fallback">
-                        <div class="launch-mark">✓</div>
-                        <strong>Clock opened</strong>
-                        <span>You can close this tab.</span>
-                    </main>`;
-                document.title = 'Clock opened';
-            }, 150);
-        };
-
-        const openClock = () => {
-            const popupUrl = new URL(location.href);
-            popupUrl.searchParams.delete('popout');
-            const popup = open(popupUrl.href, '_blank',
-                'height=300,width=300,toolbar=no,menubar=no,scrollbars=no,resizable=yes,location=no,directories=no,status=no');
-            if (!popup) return false;
+    if (location === parent.location && window.opener === null && window.innerWidth > 500) {
+        const popup = open('https://clock.timkay.com/', 'clock',
+            'height=300,width=300,toolbar=no,menubar=no,scrollbars=no,resizable=yes,location=no,directories=no,status=no');
+        if (popup) {
             popup.focus();
-            leaveHost();
-            return true;
-        };
-
-        if (openClock()) return;
-
-        // Automatic popups are policy-controlled. A real button provides the
-        // user gesture required by stricter browsers and embedded app tabs.
-        document.body.classList.add('popout-launched');
-        document.body.innerHTML = `
-            <main class="launch-fallback">
-                <div class="launch-mark">↗</div>
-                <strong>Open Clock</strong>
-                <button id="open-clock" type="button">Open minimal window</button>
-            </main>`;
-        document.title = 'Open Clock';
-        document.getElementById('open-clock').onclick = openClock;
+            if (history.length > 1) history.back();
+            else window.close();
+        }
     }
 }
 
