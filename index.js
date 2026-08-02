@@ -139,7 +139,8 @@ function update() {
 }
 
 function popout() {
-    const isPopout = new URLSearchParams(location.search).has('popout');
+    // A popup opened by this page has an opener; the host tab does not.
+    const isPopout = window.opener !== null;
     if (!isPopout) {
         const leaveHost = () => {
             if (history.length > 1) {
@@ -164,8 +165,8 @@ function popout() {
 
         const openClock = () => {
             const popupUrl = new URL(location.href);
-            popupUrl.searchParams.set('popout', '1');
-            const popup = open(popupUrl.href, 'clock',
+            popupUrl.searchParams.delete('popout');
+            const popup = open(popupUrl.href, '_blank',
                 'height=300,width=300,toolbar=no,menubar=no,scrollbars=no,resizable=yes,location=no,directories=no,status=no');
             if (!popup) return false;
             popup.focus();
