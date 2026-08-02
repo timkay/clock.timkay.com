@@ -138,11 +138,13 @@ function update() {
     $('#app').attr('aria-label', `${day}, ${date}, ${formatTime(h, m, s)}. ${timing ? `Stopwatch ${elapsed()} seconds.` : 'Press Space to start the stopwatch.'}`);
 }
 
+let popoutAttempted = false;
 function popout() {
-    if (location === parent.location && window.innerWidth > 500) {
+    if (!popoutAttempted && window.name !== 'clock' && location === parent.location && window.innerWidth > 500) {
         const popup = open('https://clock.timkay.com/', 'clock',
             'height=300,width=300,toolbar=no,menubar=no,scrollbars=no,resizable=yes,location=no,directories=no,status=no');
         if (popup) {
+            popoutAttempted = true;
             popup.focus();
             if (history.length > 1) history.back();
             else window.close();
@@ -267,7 +269,9 @@ let resizeRAF;
 $(window).resize(() => {
     cancelAnimationFrame(resizeRAF);
     resizeRAF = requestAnimationFrame(resize);
+    popout();
 });
+$(window).on('load', popout);
 $(() => {
     resize();
     face = new ClockFace();
@@ -351,4 +355,6 @@ $(() => {
         }
     });
     popout();
+    setTimeout(popout, 250);
+    setTimeout(popout, 1000);
 });

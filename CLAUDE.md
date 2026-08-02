@@ -27,7 +27,7 @@ The site is a zero-build static site. The frontend files (`index.html`, `index.j
 
 1. `index.html` loads `style.css`, `jquery.js`, then `index.js` (as ES6 module)
 2. `index.js` on DOM ready: calls `resize()` to create `ClockFace`, calls `update()`, starts `setInterval(update, 87)` loop, and calls `popout()`
-3. `popout()` opens the named `clock` window from large top-level host tabs; the 300px popup size prevents recursion
+3. `popout()` opens the named `clock` window when a top-level host tab reaches full size; `window.name` prevents recursion
 
 ### Key Components in index.js
 
