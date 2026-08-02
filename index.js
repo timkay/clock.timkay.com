@@ -146,8 +146,7 @@ function popout() {
         if (popup) {
             popoutAttempted = true;
             popup.focus();
-            if (history.length > 1) history.back();
-            else window.close();
+            history.back();
         }
     }
 }
