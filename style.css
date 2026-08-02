@@ -12,6 +12,9 @@ html, body {
     user-select: none;
     -webkit-user-select: none;
 }
+html:not(.clock-visible) body {
+    visibility: hidden;
+}
 * {
     box-sizing: border-box;
 }

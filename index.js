@@ -1,6 +1,15 @@
 let days = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
 let months = 'January February March April May June July August September October November December'.split(' ');
 
+// Keep the launcher tab visually empty. Named popup windows can reveal the
+// clock immediately; small standalone windows wait for layout to settle.
+const revealClock = () => document.documentElement.classList.add('clock-visible');
+if (window.name === 'clock') {
+    revealClock();
+} else {
+    setTimeout(() => { if (window.innerWidth <= 500) revealClock(); }, 1250);
+}
+
 function escapeHtml(str) {
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 }
