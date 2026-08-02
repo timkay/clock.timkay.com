@@ -217,6 +217,18 @@ body.popout-launched {
 }
 .launch-fallback strong { font-size: 20px; }
 .launch-fallback span { font-size: 13px; opacity: .7; }
+.launch-fallback button {
+    margin-top: 6px;
+    border: 0;
+    border-radius: 999px;
+    background: #3d3525;
+    color: white;
+    padding: 10px 16px;
+    font: 650 14px/1 system-ui, sans-serif;
+    cursor: pointer;
+}
+.launch-fallback button:hover { background: #5a4e37; }
+.launch-fallback button:focus-visible { outline: 3px solid white; outline-offset: 2px; }
 .launch-mark {
     display: grid;
     width: 36px;

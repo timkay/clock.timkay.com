@@ -139,11 +139,9 @@ function update() {
 }
 
 function popout() {
-    if (location === parent.location && window.opener === null && window.innerWidth > 500) {
-        const popup = open(location.href, '_clock',
-            'height=300,width=300,toolbar=no,menubar=no,scrollbars=no,resizable=yes,location=no,directories=no,status=no');
-        if (popup) {
-            popup.focus();
+    const isPopout = new URLSearchParams(location.search).has('popout');
+    if (!isPopout) {
+        const leaveHost = () => {
             if (history.length > 1) {
                 history.back();
             } else {
@@ -162,7 +160,32 @@ function popout() {
                     </main>`;
                 document.title = 'Clock opened';
             }, 150);
-        }
+        };
+
+        const openClock = () => {
+            const popupUrl = new URL(location.href);
+            popupUrl.searchParams.set('popout', '1');
+            const popup = open(popupUrl.href, 'clock',
+                'height=300,width=300,toolbar=no,menubar=no,scrollbars=no,resizable=yes,location=no,directories=no,status=no');
+            if (!popup) return false;
+            popup.focus();
+            leaveHost();
+            return true;
+        };
+
+        if (openClock()) return;
+
+        // Automatic popups are policy-controlled. A real button provides the
+        // user gesture required by stricter browsers and embedded app tabs.
+        document.body.classList.add('popout-launched');
+        document.body.innerHTML = `
+            <main class="launch-fallback">
+                <div class="launch-mark">↗</div>
+                <strong>Open Clock</strong>
+                <button id="open-clock" type="button">Open minimal window</button>
+            </main>`;
+        document.title = 'Open Clock';
+        document.getElementById('open-clock').onclick = openClock;
     }
 }
 
@@ -273,7 +296,7 @@ function checkForUpdate() {
                 localVersion = data.version;
                 $('#version').text(localVersion);
             } else if (data.version !== localVersion) {
-                location.replace('https://clock.timkay.com/')
+                location.reload()
             }
         })
         .catch(() => {})

@@ -27,7 +27,7 @@ The site is a zero-build static site. The frontend files (`index.html`, `index.j
 
 1. `index.html` loads `style.css`, `jquery.js`, then `index.js` (as ES6 module)
 2. `index.js` on DOM ready: calls `resize()` to create `ClockFace`, calls `update()`, starts `setInterval(update, 87)` loop, and calls `popout()`
-3. `popout()` opens or reuses a named minimal browser window when the host is wider than 500px
+3. `popout()` opens or reuses the named `clock` browser window
 
 ### Key Components in index.js
 
@@ -37,7 +37,7 @@ The site is a zero-build static site. The frontend files (`index.html`, `index.j
   - `show(h, m, s)` — Clears canvas and draws all three hands (hour at 3/8, minute at 3/4, second at 95/100 length)
 - **`resize()`** — Recalculates dimensions to keep the clock square, fitting the smaller of window width/height
 - **`update()`** — Called every 87ms. Reads current time, updates analog hands via `face.show()`, formats digital display with day/date/time
-- **`popout()`** — Opens or reuses the `_clock` popup if viewed in a large browser window
+- **`popout()`** — Opens or reuses the named `clock` popup
 - **Click handler** — Clicking the clock face toggles an elapsed-time stopwatch display
 
 ### Styling (style.css)
