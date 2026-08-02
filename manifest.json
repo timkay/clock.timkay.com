@@ -1,10 +1,10 @@
 {
-  "name": "PWA Clock",
+  "name": "Clock — Analog Clock & Stopwatch",
   "short_name": "Clock",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#ffff00",
-  "theme_color": "#ff0000",
+  "background_color": "#f3cf3f",
+  "theme_color": "#f3cf3f",
   "icons": [
     {
       "src": "icon.png",

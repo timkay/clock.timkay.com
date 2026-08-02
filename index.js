@@ -20,9 +20,9 @@ class ClockFace {
     }
     setSize(newW) {
         [this.w, this.h] = [newW, newW];
-        [this.canvas.width, this.canvas.height] = [this.w, this.h];
-        this.ctx.strokeStyle = '#c008';
-        this.ctx.lineWidth = 4.2 * newW / 250;
+        this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+        [this.canvas.width, this.canvas.height] = [Math.round(this.w * this.dpr), Math.round(this.h * this.dpr)];
+        this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     }
     clear() {
         this.ctx.clearRect(0, 0, this.w, this.h);
@@ -30,8 +30,11 @@ class ClockFace {
     v2s(x, y) {
         return [this.w / 2 + x * 2, this.h / 2 - y * 2];
     }
-    hand(z, len = 1) {
+    hand(z, len = 1, width = 4, color = '#553318') {
         let theta = (0.25 - z) * 2 * Math.PI;
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = width * this.w / 250;
+        this.ctx.lineCap = 'round';
         this.ctx.beginPath();
         this.ctx.moveTo(...this.v2s(0, 0));
         this.ctx.lineTo(...this.v2s(this.w / 4 * len * Math.cos(theta), this.w / 4 * len * Math.sin(theta)));
@@ -39,15 +42,40 @@ class ClockFace {
     }
     show(h, m, s) {
         this.clear();
-        this.ctx.fillStyle = '#ffff00cc';
+        const inset = Math.max(2, this.w * 0.012);
+        const gradient = this.ctx.createRadialGradient(this.w * .38, this.h * .3, 0, this.w / 2, this.h / 2, this.w * .65);
+        gradient.addColorStop(0, '#fff4a3');
+        gradient.addColorStop(1, '#f3cf3f');
+        this.ctx.fillStyle = gradient;
         this.ctx.beginPath();
-        this.ctx.arc(this.w / 2, this.h / 2, this.w / 2, 0, Math.PI * 2);
+        this.ctx.arc(this.w / 2, this.h / 2, this.w / 2 - inset, 0, Math.PI * 2);
         this.ctx.fill();
+        this.ctx.strokeStyle = '#b9432d';
+        this.ctx.lineWidth = Math.max(2, this.w * .012);
+        this.ctx.stroke();
+
+        for (let i = 0; i < 60; i++) {
+            const major = i % 5 === 0;
+            const angle = i * Math.PI / 30 - Math.PI / 2;
+            const outer = this.w * .452;
+            const inner = outer - this.w * (major ? .035 : .014);
+            this.ctx.strokeStyle = major ? 'rgba(91,62,26,.58)' : 'rgba(91,62,26,.24)';
+            this.ctx.lineWidth = this.w * (major ? .008 : .0035);
+            this.ctx.lineCap = 'round';
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.w / 2 + Math.cos(angle) * inner, this.h / 2 + Math.sin(angle) * inner);
+            this.ctx.lineTo(this.w / 2 + Math.cos(angle) * outer, this.h / 2 + Math.sin(angle) * outer);
+            this.ctx.stroke();
+        }
         if (h > 12) h -= 12;
         if (h === 0) h = 12;
-        this.hand((h + m / 60) / 12, 3/8);
-        this.hand((m + s / 60) / 60, 3/4);
-        this.hand(s / 60, 95/100);
+        this.hand((h + m / 60) / 12, 3/8, 7);
+        this.hand((m + s / 60) / 60, 3/4, 5);
+        this.hand(s / 60, 88/100, 2.2, '#bc402d');
+        this.ctx.fillStyle = '#553318';
+        this.ctx.beginPath();
+        this.ctx.arc(this.w / 2, this.h / 2, this.w * .018, 0, Math.PI * 2);
+        this.ctx.fill();
     }
 }
 
@@ -78,11 +106,11 @@ function resize() {
         left: `${left}px`, top: `${top}px`,
         fontSize: `${scale * fs}px`,
         paddingTop: `${scale * pt}px`,
-        borderWidth: `${scale * 3.5}px`
+        borderWidth: '0'
     });
     $('#face').css({width: `${w}px`, height: `${w}px`, left: `${left}px`, top: `${top}px`});
     $('#menu').css({display: 'block', left: `${left + 12}px`, top: `${top + 12}px`});
-    $('#close').css({display: 'block', left: `${left + w - 24}px`, top: `${top + 12}px`});
+    $('#close').css({display: 'block', left: `${left + w - 42}px`, top: `${top + 12}px`});
     const hs = 16;
     $('[data-direction="NorthWest"]').css({left: `${left}px`, top: `${top}px`});
     $('[data-direction="NorthEast"]').css({left: `${left + w - hs}px`, top: `${top}px`});
@@ -118,14 +146,36 @@ function update() {
     const fs = timing ? 19 : 21.8;
     const pt = timing ? 34 : 60;
     $('#clock').css({fontSize: `${scale * fs}px`, paddingTop: `${scale * pt}px`});
-    $('#clock').html([day, date, time].join('\n'));
+    $('#clock').html(`<div class="day">${day}</div><div class="date">${date}</div>${time}`);
+    $('#app').attr('aria-label', `${day}, ${date}, ${formatTime(h, m, s)}. ${timing ? `Stopwatch ${elapsed()} seconds.` : 'Press Space to start the stopwatch.'}`);
 }
 
 function popout() {
     if (window.__TAURI_INTERNALS__) return;
     if (location === parent.location && window.opener === null && window.innerWidth > 500) {
-        open('https://clock.timkay.com/', 'clock',
+        const popup = open(location.href, 'clock',
             'height=300,width=300,toolbar=no,menubar=no,scrollbars=no,resizable=yes,location=no,directories=no,status=no');
+        if (popup) {
+            popup.focus();
+            if (history.length > 1) {
+                history.back();
+            } else {
+                window.close();
+            }
+
+            // A directly opened tab has nowhere to go back to, and browsers
+            // generally refuse to close it. Keep that fallback unobtrusive.
+            setTimeout(() => {
+                document.body.classList.add('popout-launched');
+                document.body.innerHTML = `
+                    <main class="launch-fallback">
+                        <div class="launch-mark">✓</div>
+                        <strong>Clock opened</strong>
+                        <span>You can close this tab.</span>
+                    </main>`;
+                document.title = 'Clock opened';
+            }, 150);
+        }
     }
 }
 
@@ -310,9 +360,9 @@ $(() => {
     resize();
     face = new ClockFace();
     update();
-    setInterval(update, 87);
+    setInterval(() => { if (!document.hidden) update(); }, 100);
     checkForUpdate();
-    setInterval(checkForUpdate, 1000);
+    setInterval(checkForUpdate, 30000);
 
     // Get Tauri app version
     if (window.__TAURI_INTERNALS__) {
@@ -344,10 +394,13 @@ $(() => {
         const dd = $('#menu-dropdown');
         if (dd.is(':visible')) {
             dd.hide();
+            $('#menu').attr('aria-expanded', 'false');
         } else {
             const pos = $('#menu').position();
             dd.css({left: `${parseInt($('#menu').css('left'))}px`, top: `${parseInt($('#menu').css('top')) + 20}px`});
             dd.show();
+            $('#menu').attr('aria-expanded', 'true');
+            dd.find('.menu-item').first().trigger('focus');
         }
     });
 
@@ -355,6 +408,7 @@ $(() => {
     $(document).on('mousedown', e => {
         if (!$(e.target).closest('#menu, #menu-dropdown').length) {
             $('#menu-dropdown').hide();
+            $('#menu').attr('aria-expanded', 'false');
         }
     });
 
@@ -377,9 +431,31 @@ $(() => {
 
     $('#close').on('click', closeApp);
     $('#version').on('click', showAbout);
+    $('#version').on('keydown', e => { if (e.key === 'Enter' || e.key === ' ') showAbout(); });
 
     $(document).on('keydown', e => {
         if (e.key === 'n' || e.key === 'N') notify('Test notification');
+        if (e.key === 'Escape') {
+            $('#menu-dropdown, #overlay, #toast').hide();
+            $('#menu').attr('aria-expanded', 'false').trigger('focus');
+        }
+        if ((e.key === ' ' || e.key === 'Enter') && !$(e.target).is('button, [role="button"]')) {
+            e.preventDefault();
+            if (!timing) {
+                timing = true;
+                timer0 = timer1 = Date.now();
+            } else {
+                timer1 = Date.now();
+                splitTime = elapsed();
+            }
+            update();
+        }
+        if ((e.key === 'r' || e.key === 'R') && timing) {
+            timing = false;
+            timer0 = timer1 = null;
+            splitTime = null;
+            update();
+        }
     });
     popout();
 });

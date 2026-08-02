@@ -6,7 +6,11 @@ html, body {
     border: none;
     outline: none;
     overflow: hidden;
-    cursor: pointer;
+    cursor: default;
+    color-scheme: light;
+    font-family: ui-rounded, "SF Pro Rounded", "Avenir Next", system-ui, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
 }
 * {
     box-sizing: border-box;
@@ -20,28 +24,45 @@ canvas {
     position: absolute;
     border-radius: 50%;
     cursor: pointer;
+    filter: drop-shadow(0 8px 15px rgba(69, 43, 5, 0.18));
 }
 #clock {
     position: absolute;
     margin: 0;
     display: none;
-    border: 5px solid red;
+    border: 0;
     border-radius: 50%;
     background: transparent;
     padding-top: 60px;
     text-align: center;
     pointer-events: none;
     cursor: pointer;
+    color: #282318;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
 }
 #clock > div {
-    padding-top: 0.42em;
-    font-size: 1.33em;
-    font-weight: bold;
+    padding-top: 0.36em;
+    font-weight: 750;
     cursor: pointer;
+}
+.day {
+    font-size: .92em;
+    font-weight: 620 !important;
+}
+.date {
+    padding-top: .08em !important;
+    font-size: .72em;
+    font-weight: 560 !important;
+    white-space: nowrap;
 }
 .time {
     pointer-events: auto;
     cursor: pointer;
+    font-size: 1.28em;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.015em;
+    text-shadow: 0 1px 0 rgba(255, 245, 166, .75);
 }
 .split {
     font-size: 0.67em;
@@ -50,7 +71,7 @@ canvas {
 }
 .reset {
     cursor: pointer;
-    color: black;
+    color: #7a3d27;
     font-size: 0.33em;
     font-weight: normal;
     text-align: center;
@@ -61,29 +82,40 @@ canvas {
     position: absolute;
     display: none;
     cursor: pointer;
-    color: white;
-    font-size: 16px;
-    line-height: 16px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.72);
+    color: #3d3525;
+    font-size: 15px;
+    line-height: 30px;
     pointer-events: auto;
     -webkit-app-region: no-drag;
     z-index: 10;
-    -webkit-text-stroke: 2px #000;
-    paint-order: stroke fill;
-    text-shadow: 1px 1px 0 #000;
+    box-shadow: 0 2px 8px rgba(56, 39, 9, 0.16);
+    backdrop-filter: blur(8px);
+}
+#menu:hover, #close:hover { background: rgba(255, 255, 255, 0.94); transform: translateY(-1px); }
+#menu:focus-visible, #close:focus-visible, .menu-item:focus-visible, #version:focus-visible {
+    outline: 2px solid #744519;
+    outline-offset: 2px;
 }
 #menu-dropdown {
     display: none;
     position: absolute;
-    background: #333;
-    border-radius: 4px;
-    min-width: 150px;
-    padding: 4px 0;
+    background: rgba(44, 38, 28, 0.96);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    min-width: 170px;
+    padding: 6px;
     z-index: 20;
     pointer-events: auto;
     -webkit-app-region: no-drag;
-    font-family: sans-serif;
     font-size: 13px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.32);
+    backdrop-filter: blur(14px);
 }
 .menu-header {
     padding: 6px 12px;
@@ -94,12 +126,19 @@ canvas {
     letter-spacing: 0.5px;
 }
 .menu-item {
-    padding: 6px 12px;
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    padding: 8px 10px;
     color: white;
     cursor: pointer;
+    font: inherit;
+    text-align: left;
 }
 .menu-item:hover {
-    background: #555;
+    background: rgba(255,255,255,.13);
 }
 .menu-sep {
     height: 1px;
@@ -110,14 +149,20 @@ canvas {
     position: absolute;
     display: none;
     cursor: pointer;
-    color: white;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.72);
+    color: #3d3525;
     font-size: 14px;
-    line-height: 14px;
+    line-height: 30px;
     pointer-events: auto;
     z-index: 10;
-    -webkit-text-stroke: 2px #000;
-    paint-order: stroke fill;
-    text-shadow: 1px 1px 0 #000;
+    box-shadow: 0 2px 8px rgba(56, 39, 9, 0.16);
+    backdrop-filter: blur(8px);
+    transition: background .15s ease, transform .15s ease;
 }
 .resize-handle {
     position: absolute;
@@ -137,13 +182,13 @@ canvas {
     bottom: 2px;
     right: 4px;
     font-size: 10px;
-    color: white;
+    color: rgba(45, 38, 25, 0.66);
     pointer-events: auto;
     cursor: pointer;
     -webkit-app-region: no-drag;
-    -webkit-text-stroke: 2px #000;
-    paint-order: stroke fill;
-    text-shadow: 1px 1px 0 #000;
+    background: rgba(255,255,255,.5);
+    border-radius: 4px;
+    padding: 1px 3px;
 }
 #overlay {
     display: none;
@@ -156,9 +201,44 @@ canvas {
     z-index: 30;
     pointer-events: auto;
     -webkit-app-region: no-drag;
-    font-family: sans-serif;
     color: white;
     cursor: pointer;
+}
+
+@media (max-width: 180px), (max-height: 180px) {
+    #menu, #close { width: 24px; height: 24px; line-height: 24px; font-size: 12px; }
+    #version { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #menu, #close { transition: none; }
+}
+
+body.popout-launched {
+    background: #f3cf3f;
+    cursor: default;
+}
+.launch-fallback {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: #3d3525;
+}
+.launch-fallback strong { font-size: 20px; }
+.launch-fallback span { font-size: 13px; opacity: .7; }
+.launch-mark {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 4px;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,.62);
+    font-size: 20px;
 }
 .about-title {
     font-size: 28px;

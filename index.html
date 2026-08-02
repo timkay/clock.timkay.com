@@ -2,30 +2,33 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
-        <title>Clock</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="theme-color" content="#f5d547">
+        <meta name="description" content="A focused analog clock with a built-in stopwatch.">
+        <title>Clock — analog clock & stopwatch</title>
         <link rel="manifest" href="/manifest.json">
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
-        <canvas id="face"></canvas>
-        <pre id="clock"></pre>
-        <div id="menu">☰</div>
-        <div id="menu-dropdown">
+        <main id="app" aria-label="Clock. Click or press Space to start the stopwatch.">
+            <canvas id="face" aria-hidden="true"></canvas>
+            <section id="clock" aria-live="off"></section>
+        </main>
+        <button id="menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menu-dropdown">☰</button>
+        <div id="menu-dropdown" role="menu">
             <div class="menu-header">Clock <span id="app-version"></span></div>
-            <div class="menu-item" data-action="notify">Test Notification</div>
-            <div class="menu-item" data-action="devtools">Dev Tools</div>
+            <button class="menu-item" type="button" role="menuitem" data-action="notify">Test notification</button>
+            <button class="menu-item" type="button" role="menuitem" data-action="devtools">Developer tools</button>
             <div class="menu-sep"></div>
-            <div class="menu-item" data-action="about">About</div>
-            <div class="menu-item" data-action="close">Close</div>
+            <button class="menu-item" type="button" role="menuitem" data-action="about">About</button>
+            <button class="menu-item" type="button" role="menuitem" data-action="close">Close</button>
         </div>
-        <div id="close">✕</div>
+        <button id="close" type="button" aria-label="Close clock">✕</button>
         <div class="resize-handle" data-direction="NorthWest"></div>
         <div class="resize-handle" data-direction="NorthEast"></div>
         <div class="resize-handle" data-direction="SouthWest"></div>
         <div class="resize-handle" data-direction="SouthEast"></div>
-        <div id="stopwatch"></div>
-        <span id="version">v0.5.31</span>
+        <span id="version" role="button" tabindex="0" aria-label="About Clock">v0.6.3</span>
         <script src="jquery.js"></script>
         <script type="module" src="index.js"></script>
     </body>
