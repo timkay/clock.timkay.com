@@ -101,8 +101,8 @@ function resize() {
     const left = Math.max(0, (ww - w) / 2);
     const top = Math.max(0, (wh - w) / 2);
     const scale = w / 250;
-    const fs = timing ? 19 : 21.8;
-    const pt = timing ? 34 : 60;
+    const fs = 21.8;
+    const pt = 60;
     $('#clock').css({
         width: `${w}px`, height: `${w}px`, display: 'block',
         left: `${left}px`, top: `${top}px`,
@@ -137,11 +137,11 @@ function update() {
     if (timing) {
         time += `<div>${elapsed()}s</div>`;
         time += `<div class="split">${splitTime !== null ? splitTime + 's' : '&nbsp;'}</div>`;
-        time += `<div class="reset">✕</div>`;
+        time += `<button class="reset" type="button" aria-label="Close stopwatch"></button>`;
     }
     const scale = w / 250;
-    const fs = timing ? 19 : 21.8;
-    const pt = timing ? 34 : 60;
+    const fs = 21.8;
+    const pt = 60;
     $('#clock').css({fontSize: `${scale * fs}px`, paddingTop: `${scale * pt}px`});
     $('#clock').html(`<div class="day">${day}</div><div class="date">${date}</div>${time}`);
     $('#app').attr('aria-label', `${day}, ${date}, ${formatTime(h, m, s)}. ${timing ? `Stopwatch ${elapsed()} seconds.` : 'Press Space to start the stopwatch.'}`);
@@ -191,7 +191,7 @@ $(document).on('click', e => {
     update();
 });
 
-let localVersion = null;
+let localVersion = $('#version').text();
 
 function notify(message) {
     const pw = 500, ph = 250;
@@ -265,12 +265,7 @@ function checkForUpdate() {
         .then(r => r.json())
         .then(data => {
             if (!data.version) return;
-            if (!localVersion) {
-                localVersion = data.version;
-                $('#version').text(localVersion);
-            } else if (data.version !== localVersion) {
-                location.reload()
-            }
+            if (data.version !== localVersion) location.reload();
         })
         .catch(() => {})
 }
@@ -332,6 +327,7 @@ $(() => {
         const action = $(this).data('action');
         $('#menu-dropdown').hide();
         if (action === 'notify') notify('Test notification');
+        else if (action === 'reload') location.reload();
         else if (action === 'about') showAbout();
         else if (action === 'close') closeApp();
     });

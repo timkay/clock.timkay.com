@@ -73,13 +73,38 @@ canvas {
     padding-top: 0.08em !important;
 }
 .reset {
+    position: relative;
+    display: block;
+    width: 34px;
+    height: 34px;
+    margin: 0.08em auto 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.66);
     cursor: pointer;
-    color: #7a3d27;
-    font-size: 0.33em;
-    font-weight: normal;
-    text-align: center;
-    padding-top: 0 !important;
     pointer-events: auto;
+    box-shadow: 0 2px 7px rgba(56, 39, 9, 0.16);
+}
+.reset::before,
+.reset::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 2px;
+    border-radius: 1px;
+    background: #7a3d27;
+}
+.reset::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+.reset::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+.reset:hover {
+    background: rgba(255, 255, 255, 0.92);
 }
 #menu {
     position: absolute;
