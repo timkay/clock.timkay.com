@@ -98,7 +98,7 @@ function resize() {
     const top = Math.max(0, (wh - w) / 2);
     const scale = w / 250;
     const fs = 21.8;
-    const pt = 60;
+    const pt = 32;
     $('#clock').css({
         width: `${w}px`, height: `${w}px`, display: 'block',
         left: `${left}px`, top: `${top}px`,
@@ -131,13 +131,15 @@ function update() {
     let date = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
     let time = `<div class="time">${formatTime(h, m, s)}</div>`;
     if (timing) {
-        time += `<div>${elapsed()}s</div>`;
+        time += `<div class="stopwatch">`;
+        time += `<div class="elapsed">${elapsed()}s</div>`;
         time += `<div class="split">${splitTime !== null ? splitTime + 's' : '&nbsp;'}</div>`;
         time += `<button class="reset" type="button" aria-label="Close stopwatch"></button>`;
+        time += `</div>`;
     }
     const scale = w / 250;
     const fs = 21.8;
-    const pt = 60;
+    const pt = 32;
     $('#clock').css({fontSize: `${scale * fs}px`, paddingTop: `${scale * pt}px`});
     $('#clock').html(`<div class="day">${day}</div><div class="date">${date}</div>${time}`);
     $('#app').attr('aria-label', `${day}, ${date}, ${formatTime(h, m, s)}. ${timing ? `Stopwatch ${elapsed()} seconds.` : 'Press Space to start the stopwatch.'}`);
