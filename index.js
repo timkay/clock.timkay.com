@@ -16,64 +16,72 @@ function escapeHtml(str) {
 
 class ClockFace {
     constructor() {
-        this.canvas = $('#face')[0];
-        this.ctx = this.canvas.getContext('2d');
+        this.faceCanvas = $('#face')[0];
+        this.handsCanvas = $('#hands')[0];
+        this.faceCtx = this.faceCanvas.getContext('2d');
+        this.handsCtx = this.handsCanvas.getContext('2d');
         this.setSize(w);
     }
     setSize(newW) {
         [this.w, this.h] = [newW, newW];
         this.dpr = Math.min(window.devicePixelRatio || 1, 2);
-        [this.canvas.width, this.canvas.height] = [Math.round(this.w * this.dpr), Math.round(this.h * this.dpr)];
-        this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    }
-    clear() {
-        this.ctx.clearRect(0, 0, this.w, this.h);
+        for (const canvas of [this.faceCanvas, this.handsCanvas]) {
+            [canvas.width, canvas.height] = [Math.round(this.w * this.dpr), Math.round(this.h * this.dpr)];
+        }
+        this.faceCtx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+        this.handsCtx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+        this.drawFace();
     }
     v2s(x, y) {
         return [this.w / 2 + x * 2, this.h / 2 - y * 2];
     }
-    hand(z, len = 1, width = 4, color = '#553318') {
-        let theta = (0.25 - z) * 2 * Math.PI;
-        this.ctx.strokeStyle = color;
-        this.ctx.lineWidth = width * this.w / 250;
-        this.ctx.lineCap = 'round';
-        this.ctx.beginPath();
-        this.ctx.moveTo(...this.v2s(0, 0));
-        this.ctx.lineTo(...this.v2s(this.w / 4 * len * Math.cos(theta), this.w / 4 * len * Math.sin(theta)));
-        this.ctx.stroke();
-    }
-    show(h, m, s) {
-        this.clear();
+    drawFace() {
+        const ctx = this.faceCtx;
+        ctx.clearRect(0, 0, this.w, this.h);
         const inset = Math.max(2, this.w * 0.012);
-        const gradient = this.ctx.createRadialGradient(this.w * .38, this.h * .3, 0, this.w / 2, this.h / 2, this.w * .65);
+        const gradient = ctx.createRadialGradient(this.w * .38, this.h * .3, 0, this.w / 2, this.h / 2, this.w * .65);
         gradient.addColorStop(0, '#fff4a3');
         gradient.addColorStop(1, '#f3cf3f');
-        this.ctx.fillStyle = gradient;
-        this.ctx.beginPath();
-        this.ctx.arc(this.w / 2, this.h / 2, this.w / 2 - inset, 0, Math.PI * 2);
-        this.ctx.fill();
-        this.ctx.strokeStyle = '#b9432d';
-        this.ctx.lineWidth = Math.max(2, this.w * .012);
-        this.ctx.stroke();
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(this.w / 2, this.h / 2, this.w / 2 - inset, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#b9432d';
+        ctx.lineWidth = Math.max(2, this.w * .012);
+        ctx.stroke();
 
         for (let i = 0; i < 60; i++) {
             const major = i % 5 === 0;
             const angle = i * Math.PI / 30 - Math.PI / 2;
             const outer = this.w * .452;
             const inner = outer - this.w * (major ? .035 : .014);
-            this.ctx.strokeStyle = major ? 'rgba(91,62,26,.58)' : 'rgba(91,62,26,.24)';
-            this.ctx.lineWidth = this.w * (major ? .008 : .0035);
-            this.ctx.lineCap = 'round';
-            this.ctx.beginPath();
-            this.ctx.moveTo(this.w / 2 + Math.cos(angle) * inner, this.h / 2 + Math.sin(angle) * inner);
-            this.ctx.lineTo(this.w / 2 + Math.cos(angle) * outer, this.h / 2 + Math.sin(angle) * outer);
-            this.ctx.stroke();
+            ctx.strokeStyle = major ? 'rgba(91,62,26,.58)' : 'rgba(91,62,26,.24)';
+            ctx.lineWidth = this.w * (major ? .008 : .0035);
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(this.w / 2 + Math.cos(angle) * inner, this.h / 2 + Math.sin(angle) * inner);
+            ctx.lineTo(this.w / 2 + Math.cos(angle) * outer, this.h / 2 + Math.sin(angle) * outer);
+            ctx.stroke();
         }
+    }
+    hand(z, len = 1, width = 4.2, color = '#c008') {
+        const ctx = this.handsCtx;
+        const theta = (0.25 - z) * 2 * Math.PI;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width * this.w / 250;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(...this.v2s(0, 0));
+        ctx.lineTo(...this.v2s(this.w / 4 * len * Math.cos(theta), this.w / 4 * len * Math.sin(theta)));
+        ctx.stroke();
+    }
+    show(h, m, s) {
+        this.handsCtx.clearRect(0, 0, this.w, this.h);
         if (h > 12) h -= 12;
         if (h === 0) h = 12;
-        this.hand((h + m / 60) / 12, 3/8, 4.2, '#c008');
-        this.hand((m + s / 60) / 60, 3/4, 4.2, '#c008');
-        this.hand(s / 60, 95/100, 4.2, '#c008');
+        this.hand((h + m / 60) / 12, 3/8);
+        this.hand((m + s / 60) / 60, 3/4);
+        this.hand(s / 60, 95/100);
     }
 }
 
@@ -106,7 +114,7 @@ function resize() {
         paddingTop: `${scale * pt}px`,
         borderWidth: '0'
     });
-    $('#face').css({width: `${w}px`, height: `${w}px`, left: `${left}px`, top: `${top}px`});
+    $('#face, #hands').css({width: `${w}px`, height: `${w}px`, left: `${left}px`, top: `${top}px`});
     $('#menu').css({display: 'block', left: `${left + 12}px`, top: `${top + 12}px`});
     $('#close').css({display: 'block', left: `${left + w - 42}px`, top: `${top + 12}px`});
     // defer canvas resolution update until resize settles
@@ -129,19 +137,16 @@ function update() {
     face.show(h, m, s);
     let day = days[d.getDay()];
     let date = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-    let time = `<div class="time">${formatTime(h, m, s)}</div>`;
-    if (timing) {
-        time += `<div class="stopwatch">`;
-        time += `<div class="elapsed">${elapsed()}s</div>`;
-        time += `<div class="split">${splitTime !== null ? splitTime + 's' : '&nbsp;'}</div>`;
-        time += `<button class="reset" type="button" aria-label="Close stopwatch"></button>`;
-        time += `</div>`;
-    }
     const scale = w / 250;
     const fs = 21.8;
     const pt = 32;
     $('#clock').css({fontSize: `${scale * fs}px`, paddingTop: `${scale * pt}px`});
-    $('#clock').html(`<div class="day">${day}</div><div class="date">${date}</div>${time}`);
+    $('#day').text(day);
+    $('#date').text(date);
+    $('#time').text(formatTime(h, m, s));
+    $('#elapsed').text(`${elapsed()}s`);
+    $('#split').html(splitTime !== null ? splitTime + 's' : '&nbsp;');
+    $('#stopwatch').toggle(timing);
     $('#app').attr('aria-label', `${day}, ${date}, ${formatTime(h, m, s)}. ${timing ? `Stopwatch ${elapsed()} seconds.` : 'Press Space to start the stopwatch.'}`);
 }
 
