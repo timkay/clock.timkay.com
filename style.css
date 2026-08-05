@@ -79,7 +79,7 @@ canvas {
 .stopwatch {
     display: none;
     position: absolute;
-    top: calc(61% - 1.2em);
+    top: calc(61% - 0.6em);
     left: 0;
     width: 100%;
     padding-top: 0 !important;
