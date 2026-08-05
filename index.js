@@ -266,7 +266,11 @@ function checkForUpdate() {
         .then(r => r.json())
         .then(data => {
             if (!data.version) return;
-            if (data.version !== localVersion) location.reload();
+            if (data.version !== localVersion) {
+                const url = new URL(location.href);
+                url.searchParams.set('version', data.version);
+                location.replace(url);
+            }
         })
         .catch(() => {})
 }
@@ -284,7 +288,7 @@ $(() => {
     update();
     setInterval(() => { if (!document.hidden) update(); }, 100);
     checkForUpdate();
-    setInterval(checkForUpdate, 30000);
+    setInterval(checkForUpdate, 1000);
 
     function closeApp() {
         window.close();
