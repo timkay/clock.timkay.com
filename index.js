@@ -172,9 +172,12 @@ if ('caches' in window) {
         .catch(() => {});
 }
 
-$(document).on('click', '.reset', e => {
+let suppressClockClickUntil = 0;
+
+$(document).on('pointerdown', '.reset', e => {
     e.preventDefault();
     e.stopImmediatePropagation();
+    suppressClockClickUntil = Date.now() + 500;
     timing = false;
     timer0 = timer1 = null;
     splitTime = null;
@@ -182,6 +185,7 @@ $(document).on('click', '.reset', e => {
 });
 
 $(document).on('click', e => {
+    if (Date.now() < suppressClockClickUntil) return;
     if ($(e.target).closest('#close, #menu, #menu-dropdown, #version, #overlay, #toast, .reset').length) return;
     if (!timing) {
         timing = true;
