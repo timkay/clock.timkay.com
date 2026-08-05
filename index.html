@@ -6,12 +6,22 @@
         <meta name="theme-color" content="#f5d547">
         <meta name="description" content="A focused analog clock with a built-in stopwatch.">
         <title>Clock — analog clock & stopwatch</title>
-        <link rel="stylesheet" type="text/css" href="style.css?v=0.7.11">
+        <link rel="stylesheet" type="text/css" href="style.css?v=0.7.12">
     </head>
     <body>
         <main id="app" aria-label="Clock. Click or press Space to start the stopwatch.">
             <canvas id="face" aria-hidden="true"></canvas>
-            <section id="clock" aria-live="off"></section>
+            <canvas id="hands" aria-hidden="true"></canvas>
+            <section id="clock" aria-live="off">
+                <div id="day" class="day"></div>
+                <div id="date" class="date"></div>
+                <div id="time" class="time"></div>
+                <div id="stopwatch" class="stopwatch">
+                    <div id="elapsed" class="elapsed"></div>
+                    <div id="split" class="split">&nbsp;</div>
+                    <button class="reset" type="button" aria-label="Close stopwatch"></button>
+                </div>
+            </section>
         </main>
         <button id="menu" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menu-dropdown">☰</button>
         <div id="menu-dropdown" role="menu">
@@ -23,8 +33,8 @@
             <button class="menu-item" type="button" role="menuitem" data-action="close">Close</button>
         </div>
         <button id="close" type="button" aria-label="Close clock">✕</button>
-        <span id="version" role="button" tabindex="0" aria-label="About Clock">v0.7.11</span>
+        <span id="version" role="button" tabindex="0" aria-label="About Clock">v0.7.12</span>
         <script src="jquery.js"></script>
-        <script type="module" src="index.js?v=0.7.11"></script>
+        <script type="module" src="index.js?v=0.7.12"></script>
     </body>
 </html>
