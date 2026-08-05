@@ -144,8 +144,13 @@ function update() {
     $('#day').text(day);
     $('#date').text(date);
     $('#time').text(formatTime(h, m, s));
-    $('#elapsed').text(`${elapsed()}s`);
-    $('#split').html(splitTime !== null ? splitTime + 's' : '&nbsp;');
+    if (splitTime === null) {
+        $('#elapsed').text(`${elapsed()}s`);
+        $('#split').html('&nbsp;');
+    } else {
+        $('#elapsed').text(`${splitTime}s`);
+        $('#split').text(`${elapsed()}s`);
+    }
     $('#stopwatch').toggle(timing);
     $('#app').attr('aria-label', `${day}, ${date}, ${formatTime(h, m, s)}. ${timing ? `Stopwatch ${elapsed()} seconds.` : 'Press Space to start the stopwatch.'}`);
 }
