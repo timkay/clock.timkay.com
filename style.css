@@ -23,16 +23,23 @@ canvas {
     border: none;
     outline: none;
 }
-#face {
+#face,
+#hands {
     position: absolute;
-    z-index: 1;
     border-radius: 50%;
+}
+#face {
+    z-index: 1;
     cursor: pointer;
     filter: drop-shadow(0 8px 15px rgba(69, 43, 5, 0.18));
 }
+#hands {
+    z-index: 2;
+    pointer-events: none;
+}
 #clock {
     position: absolute;
-    z-index: 2;
+    z-index: 3;
     margin: 0;
     display: none;
     border: 0;
@@ -70,6 +77,7 @@ canvas {
     text-shadow: 0 1px 0 rgba(255, 245, 166, .75);
 }
 .stopwatch {
+    display: none;
     position: absolute;
     top: 61%;
     left: 0;
