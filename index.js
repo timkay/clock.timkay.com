@@ -71,13 +71,9 @@ class ClockFace {
         }
         if (h > 12) h -= 12;
         if (h === 0) h = 12;
-        this.hand((h + m / 60) / 12, 3/8, 7);
-        this.hand((m + s / 60) / 60, 3/4, 5);
-        this.hand(s / 60, 88/100, 2.2, '#bc402d');
-        this.ctx.fillStyle = '#553318';
-        this.ctx.beginPath();
-        this.ctx.arc(this.w / 2, this.h / 2, this.w * .018, 0, Math.PI * 2);
-        this.ctx.fill();
+        this.hand((h + m / 60) / 12, 3/8, 4.2, '#c008');
+        this.hand((m + s / 60) / 60, 3/4, 4.2, '#c008');
+        this.hand(s / 60, 95/100, 4.2, '#c008');
     }
 }
 
@@ -174,13 +170,18 @@ if ('caches' in window) {
         .catch(() => {});
 }
 
+$(document).on('click', '.reset', e => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    timing = false;
+    timer0 = timer1 = null;
+    splitTime = null;
+    update();
+});
+
 $(document).on('click', e => {
-    if ($(e.target).closest('#close, #menu, #menu-dropdown, #version, #overlay, #toast').length) return;
-    if ($(e.target).closest('.reset').length) {
-        timing = false;
-        timer0 = timer1 = null;
-        splitTime = null;
-    } else if (!timing) {
+    if ($(e.target).closest('#close, #menu, #menu-dropdown, #version, #overlay, #toast, .reset').length) return;
+    if (!timing) {
         timing = true;
         timer0 = Date.now();
         timer1 = Date.now();
