@@ -172,9 +172,12 @@ if ('caches' in window) {
         .catch(() => {});
 }
 
-$(document).on('click', '.reset', e => {
+let suppressClockClickUntil = 0;
+
+$(document).on('pointerdown', '.reset', e => {
     e.preventDefault();
     e.stopImmediatePropagation();
+    suppressClockClickUntil = Date.now() + 500;
     timing = false;
     timer0 = timer1 = null;
     splitTime = null;
@@ -182,6 +185,7 @@ $(document).on('click', '.reset', e => {
 });
 
 $(document).on('click', e => {
+    if (Date.now() < suppressClockClickUntil) return;
     if ($(e.target).closest('#close, #menu, #menu-dropdown, #version, #overlay, #toast, .reset').length) return;
     if (!timing) {
         timing = true;
@@ -195,6 +199,27 @@ $(document).on('click', e => {
 });
 
 let localVersion = $('#version').text();
+
+function versionParts(version) {
+    return version.replace(/^v/, '').split('.').map(Number);
+}
+
+function isNewerVersion(candidate, current) {
+    const a = versionParts(candidate);
+    const b = versionParts(current);
+    const length = Math.max(a.length, b.length);
+    for (let i = 0; i < length; i++) {
+        const difference = (a[i] || 0) - (b[i] || 0);
+        if (difference !== 0) return difference > 0;
+    }
+    return false;
+}
+
+function reloadLatest(version = Date.now()) {
+    const url = new URL(location.href);
+    url.searchParams.set('version', version);
+    location.replace(url);
+}
 
 function notify(message) {
     const pw = 500, ph = 250;
@@ -268,11 +293,7 @@ function checkForUpdate() {
         .then(r => r.json())
         .then(data => {
             if (!data.version) return;
-            if (data.version !== localVersion) {
-                const url = new URL(location.href);
-                url.searchParams.set('version', data.version);
-                location.replace(url);
-            }
+            if (isNewerVersion(data.version, localVersion)) reloadLatest(data.version);
         })
         .catch(() => {})
 }
@@ -334,7 +355,7 @@ $(() => {
         const action = $(this).data('action');
         $('#menu-dropdown').hide();
         if (action === 'notify') notify('Test notification');
-        else if (action === 'reload') location.reload();
+        else if (action === 'reload') reloadLatest();
         else if (action === 'about') showAbout();
         else if (action === 'close') closeApp();
     });
