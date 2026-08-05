@@ -71,13 +71,9 @@ class ClockFace {
         }
         if (h > 12) h -= 12;
         if (h === 0) h = 12;
-        this.hand((h + m / 60) / 12, 3/8, 7);
-        this.hand((m + s / 60) / 60, 3/4, 5);
-        this.hand(s / 60, 88/100, 2.2, '#bc402d');
-        this.ctx.fillStyle = '#553318';
-        this.ctx.beginPath();
-        this.ctx.arc(this.w / 2, this.h / 2, this.w * .018, 0, Math.PI * 2);
-        this.ctx.fill();
+        this.hand((h + m / 60) / 12, 3/8, 4.2, '#c008');
+        this.hand((m + s / 60) / 60, 3/4, 4.2, '#c008');
+        this.hand(s / 60, 95/100, 4.2, '#c008');
     }
 }
 
@@ -102,7 +98,7 @@ function resize() {
     const top = Math.max(0, (wh - w) / 2);
     const scale = w / 250;
     const fs = 21.8;
-    const pt = 60;
+    const pt = 32;
     $('#clock').css({
         width: `${w}px`, height: `${w}px`, display: 'block',
         left: `${left}px`, top: `${top}px`,
@@ -135,13 +131,15 @@ function update() {
     let date = `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
     let time = `<div class="time">${formatTime(h, m, s)}</div>`;
     if (timing) {
-        time += `<div>${elapsed()}s</div>`;
+        time += `<div class="stopwatch">`;
+        time += `<div class="elapsed">${elapsed()}s</div>`;
         time += `<div class="split">${splitTime !== null ? splitTime + 's' : '&nbsp;'}</div>`;
         time += `<button class="reset" type="button" aria-label="Close stopwatch"></button>`;
+        time += `</div>`;
     }
     const scale = w / 250;
     const fs = 21.8;
-    const pt = 60;
+    const pt = 32;
     $('#clock').css({fontSize: `${scale * fs}px`, paddingTop: `${scale * pt}px`});
     $('#clock').html(`<div class="day">${day}</div><div class="date">${date}</div>${time}`);
     $('#app').attr('aria-label', `${day}, ${date}, ${formatTime(h, m, s)}. ${timing ? `Stopwatch ${elapsed()} seconds.` : 'Press Space to start the stopwatch.'}`);
@@ -174,13 +172,18 @@ if ('caches' in window) {
         .catch(() => {});
 }
 
+$(document).on('click', '.reset', e => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    timing = false;
+    timer0 = timer1 = null;
+    splitTime = null;
+    update();
+});
+
 $(document).on('click', e => {
-    if ($(e.target).closest('#close, #menu, #menu-dropdown, #version, #overlay, #toast').length) return;
-    if ($(e.target).closest('.reset').length) {
-        timing = false;
-        timer0 = timer1 = null;
-        splitTime = null;
-    } else if (!timing) {
+    if ($(e.target).closest('#close, #menu, #menu-dropdown, #version, #overlay, #toast, .reset').length) return;
+    if (!timing) {
         timing = true;
         timer0 = Date.now();
         timer1 = Date.now();
@@ -265,7 +268,11 @@ function checkForUpdate() {
         .then(r => r.json())
         .then(data => {
             if (!data.version) return;
-            if (data.version !== localVersion) location.reload();
+            if (data.version !== localVersion) {
+                const url = new URL(location.href);
+                url.searchParams.set('version', data.version);
+                location.replace(url);
+            }
         })
         .catch(() => {})
 }
@@ -283,7 +290,7 @@ $(() => {
     update();
     setInterval(() => { if (!document.hidden) update(); }, 100);
     checkForUpdate();
-    setInterval(checkForUpdate, 30000);
+    setInterval(checkForUpdate, 1000);
 
     function closeApp() {
         window.close();

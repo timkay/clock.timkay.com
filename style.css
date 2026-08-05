@@ -25,12 +25,14 @@ canvas {
 }
 #face {
     position: absolute;
+    z-index: 1;
     border-radius: 50%;
     cursor: pointer;
     filter: drop-shadow(0 8px 15px rgba(69, 43, 5, 0.18));
 }
 #clock {
     position: absolute;
+    z-index: 2;
     margin: 0;
     display: none;
     border: 0;
@@ -67,6 +69,17 @@ canvas {
     letter-spacing: 0.015em;
     text-shadow: 0 1px 0 rgba(255, 245, 166, .75);
 }
+.stopwatch {
+    position: absolute;
+    top: 61%;
+    left: 0;
+    width: 100%;
+    padding-top: 0 !important;
+}
+.elapsed {
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+}
 .split {
     font-size: 0.67em;
     font-weight: normal;
@@ -81,10 +94,9 @@ canvas {
     padding: 0;
     border: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.66);
+    background: transparent;
     cursor: pointer;
     pointer-events: auto;
-    box-shadow: 0 2px 7px rgba(56, 39, 9, 0.16);
 }
 .reset::before,
 .reset::after {
@@ -103,8 +115,9 @@ canvas {
 .reset::after {
     transform: translate(-50%, -50%) rotate(-45deg);
 }
-.reset:hover {
-    background: rgba(255, 255, 255, 0.92);
+.reset:focus-visible {
+    outline: 2px solid #744519;
+    outline-offset: 1px;
 }
 #menu {
     position: absolute;
